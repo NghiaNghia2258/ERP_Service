@@ -69,10 +69,7 @@ namespace ERP_Service.Infrastructure.Migrations
                     b.Property<int>("Point")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("UserLoginId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int?>("UserLoginId1")
+                    b.Property<int?>("UserLoginId")
                         .HasColumnType("int");
 
                     b.Property<int>("Version")
@@ -80,7 +77,7 @@ namespace ERP_Service.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserLoginId1");
+                    b.HasIndex("UserLoginId");
 
                     b.ToTable("Customers");
                 });
@@ -272,7 +269,7 @@ namespace ERP_Service.Infrastructure.Migrations
                 {
                     b.HasOne("ERP_Service.Domain.Models.UserLogin", "UserLogin")
                         .WithMany("Customers")
-                        .HasForeignKey("UserLoginId1");
+                        .HasForeignKey("UserLoginId");
 
                     b.Navigation("UserLogin");
                 });

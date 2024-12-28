@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ERP_Service.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241227090343_AddCustomer4")]
-    partial class AddCustomer4
+    [Migration("20241228041858_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -72,10 +72,7 @@ namespace ERP_Service.Infrastructure.Migrations
                     b.Property<int>("Point")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("UserLoginId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int?>("UserLoginId1")
+                    b.Property<int?>("UserLoginId")
                         .HasColumnType("int");
 
                     b.Property<int>("Version")
@@ -83,7 +80,7 @@ namespace ERP_Service.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserLoginId1");
+                    b.HasIndex("UserLoginId");
 
                     b.ToTable("Customers");
                 });
@@ -275,7 +272,7 @@ namespace ERP_Service.Infrastructure.Migrations
                 {
                     b.HasOne("ERP_Service.Domain.Models.UserLogin", "UserLogin")
                         .WithMany("Customers")
-                        .HasForeignKey("UserLoginId1");
+                        .HasForeignKey("UserLoginId");
 
                     b.Navigation("UserLogin");
                 });

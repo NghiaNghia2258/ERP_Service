@@ -14,7 +14,7 @@ public class Customer : EntityBase<Guid>, ICreateTracking, ISoftDelete
 	public int Point { get; set; } = 0;
 	public double Debt { get; set; } = 0;
 
-	public Guid? UserLoginId { get; set; }
+	public int? UserLoginId { get; set; }
 	public DateTime CreatedAt { get; set; } = DateTime.Now;
 	public string? CreatedBy { get; set; }
 	public string? CreatedName { get; set; }

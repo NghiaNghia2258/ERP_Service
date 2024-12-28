@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ERP_Service.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class AddCustomer : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -102,7 +102,7 @@ namespace ERP_Service.Infrastructure.Migrations
                     Gender = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Point = table.Column<int>(type: "int", nullable: false),
                     Debt = table.Column<double>(type: "float", nullable: false),
-                    UserLoginId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    UserLoginId = table.Column<int>(type: "int", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedName = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -110,15 +110,14 @@ namespace ERP_Service.Infrastructure.Migrations
                     DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     DeletedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DeletedName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserLoginId1 = table.Column<int>(type: "int", nullable: true),
                     Version = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Customers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Customers_UserLogins_UserLoginId1",
-                        column: x => x.UserLoginId1,
+                        name: "FK_Customers_UserLogins_UserLoginId",
+                        column: x => x.UserLoginId,
                         principalTable: "UserLogins",
                         principalColumn: "Id");
                 });
@@ -137,10 +136,10 @@ namespace ERP_Service.Infrastructure.Migrations
                 columns: new[] { "Id", "Name", "Version" },
                 values: new object[,]
                 {
-                    { 1, "CREATE_QUIZ", 0 },
-                    { 2, "DELETE_QUIZ", 0 },
-                    { 3, "UPDATE_QUIZ", 0 },
-                    { 4, "SELECT_QUIZ", 0 }
+                    { 5, "CREATE_CUSTOMER", 0 },
+                    { 6, "DELETE_CUSTOMER", 0 },
+                    { 7, "UPDATE_CUSTOMER", 0 },
+                    { 8, "SELECT_CUSTOMER", 0 }
                 });
 
             migrationBuilder.InsertData(
@@ -148,11 +147,11 @@ namespace ERP_Service.Infrastructure.Migrations
                 columns: new[] { "RoleGroupsId", "RolesId" },
                 values: new object[,]
                 {
-                    { 1, 1 },
-                    { 1, 2 },
-                    { 1, 3 },
-                    { 1, 4 },
-                    { 2, 4 }
+                    { 1, 5 },
+                    { 1, 6 },
+                    { 1, 7 },
+                    { 1, 8 },
+                    { 2, 8 }
                 });
 
             migrationBuilder.InsertData(
@@ -165,9 +164,9 @@ namespace ERP_Service.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Customers_UserLoginId1",
+                name: "IX_Customers_UserLoginId",
                 table: "Customers",
-                column: "UserLoginId1");
+                column: "UserLoginId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RoleRoleGroup_RolesId",

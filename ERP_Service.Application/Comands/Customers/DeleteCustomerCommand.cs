@@ -29,7 +29,7 @@ public class DeleteCustomerCommandHandler : CommandHandlerBase, IRequestHandler<
 			return new ApiNotFoundResult("Customer not found");
 		}
 
-		var isSuccess = await _unitOfWork.CustomerRepository.Delete(request.Id, null);
+		var isSuccess = await _unitOfWork.CustomerRepository.Delete(request.Id, request.PayloadToken);
 		if (!isSuccess)
 		{
 			return new ApiErrorResult();
