@@ -14,13 +14,17 @@ public class IdentityServices : IAuthService, IAuthoziService
 	private readonly IAuthenRepository _authenRepository;
 	private readonly IAuthoziRepository _authoziRepository ;
 	protected readonly IConfiguration _config;
+	private readonly IHttpContextAccessor _httpContextAccessor;
 
 
-	public IdentityServices(IAuthenRepository authenRepository, IAuthoziRepository authoziRepository, IConfiguration config)
+	public PayloadToken PayloadToken => JwtTokenHelper.GetPayloadToken(_httpContextAccessor.HttpContext, _config);
+
+	public IdentityServices(IAuthenRepository authenRepository, IAuthoziRepository authoziRepository, IConfiguration config, IHttpContextAccessor httpContextAccessor)
 	{
 		_authenRepository = authenRepository;
 		_authoziRepository = authoziRepository;
 		_config = config;
+		_httpContextAccessor = httpContextAccessor;
 	}
 
 	public async Task<PayloadToken> SignIn(ParamasSignInRequest paramas)
@@ -51,13 +55,14 @@ public class IdentityServices : IAuthService, IAuthoziService
 		return isSignUpSuccess;
 	}
 
-	public async Task IsAuthozi(HttpContext httpContext, string role = "")
+	public async Task IsAuthozi(string role = "")
 	{
-		PayloadToken payload = JwtTokenHelper.GetPayloadToken(httpContext, _config);
+		PayloadToken payload = JwtTokenHelper.GetPayloadToken(_httpContextAccessor.HttpContext, _config);
 		bool isAuthozi = await _authoziRepository.IsAuthozi(payload.UserLoginId,role);
 		if(!isAuthozi)
 		{
 			throw new AuthoziException("Xác thực token thất bại vui lòng đọc file readme.md để biết thêm chi tiết về model phân quyền");
 		}
 	}
+	
 }

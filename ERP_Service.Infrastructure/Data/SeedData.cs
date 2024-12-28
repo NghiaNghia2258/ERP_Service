@@ -10,11 +10,11 @@ public static class SeedData
         // Define roles with specific permissions
         var roles = new List<Role>
         {
-            new Role { Id = 1, Name = "CREATE_QUIZ" },
-            new Role { Id = 2, Name = "DELETE_QUIZ" },
-            new Role { Id = 3, Name = "UPDATE_QUIZ" },
-            new Role { Id = 4, Name = "SELECT_QUIZ" }
-        };
+			new Role { Id = 5, Name = "CREATE_CUSTOMER" },
+			new Role { Id = 6, Name = "DELETE_CUSTOMER" },
+			new Role { Id = 7, Name = "UPDATE_CUSTOMER" },
+			new Role { Id = 8, Name = "SELECT_CUSTOMER" }
+		};
 
         modelBuilder.Entity<Role>().HasData(roles);
 
@@ -41,11 +41,12 @@ public static class SeedData
             .HasMany(rg => rg.Roles)
             .WithMany(r => r.RoleGroups)
             .UsingEntity(j => j.HasData(
-                new { RoleGroupsId = 1, RolesId = 1 },
-                new { RoleGroupsId = 1, RolesId = 2 },
-                new { RoleGroupsId = 1, RolesId = 3 },
-                new { RoleGroupsId = 1, RolesId = 4 }, // Admin has full permissions
-                new { RoleGroupsId = 2, RolesId = 4 } // User only has SELECT permission
-            ));
+               
+				new { RoleGroupsId = 1, RolesId = 5 },
+				new { RoleGroupsId = 1, RolesId = 6 },
+				new { RoleGroupsId = 1, RolesId = 7 },
+				new { RoleGroupsId = 1, RolesId = 8 },
+				new { RoleGroupsId = 2, RolesId = 8 }
+			));
     }
 }

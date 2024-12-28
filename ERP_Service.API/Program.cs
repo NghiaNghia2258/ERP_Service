@@ -9,11 +9,11 @@ Log.Information($"Start {builder.Environment.ApplicationName} up");
 
 try
 {
+	builder.AddInfrastructureServices(builder.Configuration);
+	builder.AddApplicationServices();
 	builder.Host.AddAppConfigurations();
 	builder.Services.AddConfigurationSettings(builder.Configuration);
 	builder.Services.AddInfrastructure(builder.Configuration);
-	builder.AddInfrastructureServices(builder.Configuration);
-	builder.AddApplicationServices();
 
 	var app = builder.Build();
 	app.UseCors("CorsPolicy");

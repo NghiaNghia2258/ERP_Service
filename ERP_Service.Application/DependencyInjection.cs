@@ -12,5 +12,6 @@ public static class DependencyInjection
 		builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 		builder.Services.AddScoped<IAuthService, IdentityServices>();
 		builder.Services.AddScoped<IAuthoziService, IdentityServices>();
+		builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 	}
 }

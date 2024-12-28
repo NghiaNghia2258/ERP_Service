@@ -23,6 +23,7 @@ public partial class AppDbContext : DbContext
 	public virtual DbSet<RoleGroup> RoleGroups { get; set; }
 
 	public virtual DbSet<UserLogin> UserLogins { get; set; }
+	public virtual DbSet<Customer> Customers { get; set; }
 
 	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		=> optionsBuilder.UseSqlServer("Data Source=mssql-189685-0.cloudclusters.net,10046;Initial Catalog=AppDb;User ID=admin;Password=Admin123;Trust Server Certificate=True");

@@ -1,6 +1,8 @@
 ﻿using ERP_Service.Domain.Abstractions;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore;
+using ERP_Service.Domain.Abstractions.Repository;
+using ERP_Service.Infrastructure.Repostiroty;
 
 namespace ERP_Service.Infrastructure;
 
@@ -8,9 +10,9 @@ public class UnitOfWork : IUnitOfWork
 {
 	private readonly AppDbContext _dbContext;
 
-	//private readonly IQuizRepository _quizRepository;
+	public ICustomerRepository CustomerRepository => _customerRepository ?? new CustomerRepository(_dbContext);
 
-	//public IQuizRepository QuizRepository => _quizRepository ?? new QuizRepository(_dbContext);
+	private readonly ICustomerRepository _customerRepository;
 
 	public UnitOfWork(AppDbContext dbContext)
 	{
@@ -40,6 +42,6 @@ public class UnitOfWork : IUnitOfWork
 
 	public void Dispose()
 	{
-
+		_dbContext.Dispose();
 	}
 }

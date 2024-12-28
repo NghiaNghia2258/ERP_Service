@@ -2,9 +2,11 @@
 using ERP_Service.Application;
 using ERP_Service.Domain.Abstractions;
 using ERP_Service.Domain.Configurations;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Reflection;
 using System.Text;
 
 namespace ERP_Service.API.Extensions;
@@ -33,7 +35,10 @@ public static class ServiceExtensions
 
 		services.AddJwtAuthentication(configuration);
         services.AddCorsServices();
-        return services;
+
+		services.AddScoped<IMediator, Mediator>();
+
+		return services;
     }
 
     public static IServiceCollection AddJwtAuthentication(this IServiceCollection services,
