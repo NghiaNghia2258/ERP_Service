@@ -64,5 +64,13 @@ namespace ERP_Service.API.Controllers
 			var result = await _mediator.Send(new GetAllProductQuery(option));
 			return Ok(result);
 		}
+		[HttpGet("get-variants/{productId:int}")]
+		public async Task<IActionResult> GetVariantsByProductId(int productId)
+		{
+			await _authoziService.IsAuthozi(role: RoleNameConst.SELECT_CUSTOMER);
+
+			var result = await _mediator.Send(new GetProductVariantByProductIdQuery(productId));
+			return Ok(result);
+		}
 	}
 }

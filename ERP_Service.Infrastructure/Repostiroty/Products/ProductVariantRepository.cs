@@ -1,6 +1,5 @@
 ﻿using ERP_Service.Domain.Abstractions.Repository.Products;
 using ERP_Service.Domain.Models.Products;
-using ERP_Service.Shared.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -35,5 +34,11 @@ public class ProductVariantRepository : RepositoryBase<ProductVariant, int>, IPr
 	{
 		await UpdateAsync(model);
 		return true;
+	}
+	public async Task<IEnumerable<ProductVariant>> GetProductVariantsByProductId(int productId)
+	{
+		return await _dbContext.ProductVariants
+			.Where(x => x.ProductId == productId)
+			.ToListAsync();
 	}
 }
