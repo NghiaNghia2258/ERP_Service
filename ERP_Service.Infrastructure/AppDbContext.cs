@@ -26,7 +26,7 @@ public partial class AppDbContext : DbContext
 	public virtual DbSet<Customer> Customers { get; set; }
 
 	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-		=> optionsBuilder.UseSqlServer("Data Source=DESKTOP-LEDG467\\SQLEXPRESS;Initial Catalog=AppDb;Integrated Security=True;Trust Server Certificate=True");
+		=> optionsBuilder.UseSqlServer("Data Source=.\\SQLEXPRESS;Initial Catalog=AppDb;Integrated Security=True;Trust Server Certificate=True");
 
 
 
