@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
-using ERP_Service.Application.Mapper.Model.Customers;
 using ERP_Service.Application.Mapper.Model.Products;
-using ERP_Service.Application.Queries.Customers;
 using ERP_Service.Domain.Abstractions;
 using ERP_Service.Domain.ApiResult;
 using MediatR;

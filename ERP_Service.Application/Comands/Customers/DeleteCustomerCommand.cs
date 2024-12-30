@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using ERP_Service.Domain.Abstractions;
 using ERP_Service.Domain.ApiResult;
-using ERP_Service.Shared.Models;
 using MediatR;
 
 namespace ERP_Service.Application.Comands.Customers;

@@ -1,7 +1,5 @@
-﻿using ERP_Service.Domain.Models;
-using ERP_Service.Domain.Models.Products;
+﻿using ERP_Service.Domain.Models.Products;
 using ERP_Service.Domain.PagingRequest;
-using ERP_Service.Shared.Models;
 
 namespace ERP_Service.Domain.Abstractions.Repository.Products;
 

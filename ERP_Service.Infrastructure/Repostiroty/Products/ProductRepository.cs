@@ -33,8 +33,12 @@ public class ProductRepository : RepositoryBase<Product, int>, IProductRepositor
 			{
 				Id = q.Id,
 				Name = q.Name,
-				CreatedAt = q.CreatedAt,
-				CreatedBy = q.CreatedBy
+				Description = q.Description,
+				MainImageUrl = q.MainImageUrl,
+				TotalInventory = q.TotalInventory,
+				CategoryId = q.CategoryId,
+				CategoryName = q.Category.Name,
+
 			});
 
 		TotalRecords.PRODUCT = await query.CountAsync();

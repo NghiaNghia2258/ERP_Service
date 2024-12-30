@@ -1,8 +1,6 @@
 ﻿using ERP_Service.Domain.Abstractions.Repository.Products;
-using ERP_Service.Domain.Const;
 using ERP_Service.Domain.Models.Products;
 using ERP_Service.Domain.PagingRequest;
-using ERP_Service.Shared.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -28,7 +26,7 @@ public class ProductCategoryRepository : RepositoryBase<ProductCategory, int>, I
 	}
 	public async Task<IEnumerable<ProductCategory>> GetAll(OptionFilterProductCategory option)
 	{
-		var query = _dbContext.Products
+		var query = _dbContext.ProductCategories
 			.Select(q => new ProductCategory
 			{
 				Id = q.Id,

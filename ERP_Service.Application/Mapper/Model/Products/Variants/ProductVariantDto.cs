@@ -2,7 +2,7 @@
 
 public class ProductVariantDto
 {
-	public int Id { get; set; }
+	public int? Id { get; set; }
 	public string Size { get; set; } = null!;
 
 	public string Color { get; set; } = null!;

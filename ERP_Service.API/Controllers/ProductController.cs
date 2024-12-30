@@ -6,6 +6,7 @@ using ERP_Service.Application.Queries.Customers;
 using ERP_Service.Application.Queries.Products;
 using ERP_Service.Application.Services.Interfaces;
 using ERP_Service.Domain.Const;
+using ERP_Service.Domain.PagingRequest;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -37,6 +38,30 @@ namespace ERP_Service.API.Controllers
 			await _authoziService.IsAuthozi(role: RoleNameConst.CREATE_CUSTOMER);
 
 			var result = await _mediator.Send(new CreateProductCommand(model));
+			return Ok(result);
+		}
+		[HttpPut]
+		public async Task<IActionResult> Update([FromBody] GetByIdProductDto model)
+		{
+			await _authoziService.IsAuthozi(role: RoleNameConst.UPDATE_CUSTOMER);
+
+			var result = await _mediator.Send(new UpdateProductCommand(model));
+			return Ok(result);
+		}
+		[HttpDelete("{id:int}")]
+		public async Task<IActionResult> Delete(int id)
+		{
+			await _authoziService.IsAuthozi(role: RoleNameConst.DELETE_CUSTOMER);
+
+			var result = await _mediator.Send(new DeleteProductCommand(id));
+			return Ok(result);
+		}
+		[HttpGet]
+		public async Task<IActionResult> GetAll([FromQuery] OptionFilterProduct option)
+		{
+			await _authoziService.IsAuthozi(role: RoleNameConst.SELECT_CUSTOMER);
+
+			var result = await _mediator.Send(new GetAllProductQuery(option));
 			return Ok(result);
 		}
 	}
