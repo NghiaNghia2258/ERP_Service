@@ -58,6 +58,13 @@ public class ProductRepository : RepositoryBase<Product, int>, IProductRepositor
 				{
 					Id = x.Id,
 					Name = x.Name,
+					NameEn = x.NameEn,
+					Description = x.Description,
+					MainImageUrl = x.MainImageUrl,
+					TotalInventory = x.TotalInventory,
+					CategoryId = x.CategoryId,
+					CategoryName = x.CategoryName,
+					Version = x.Version,
 					ProductVariants = x.ProductVariants.Select(y => new ProductVariant()
 					{
 						Id = y.Id,
@@ -65,7 +72,8 @@ public class ProductRepository : RepositoryBase<Product, int>, IProductRepositor
 						Size = y.Size,
 						ImageUrl = y.ImageUrl,
 						Price = y.Price,
-						Inventory = y.Inventory
+						Inventory = y.Inventory,
+						Version = y.Version,
 					}).ToList(),
 					ProductImages = x.ProductImages.Select(y => new ProductImage
 					{

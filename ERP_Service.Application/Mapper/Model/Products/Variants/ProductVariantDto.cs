@@ -11,7 +11,8 @@ public class ProductVariantDto
 	public string? ImageUrl { get; set; }
 
 	public int Inventory { get; set; }
-	public int? ProductId { get; set; }
 	public bool? IsDeleted { get; set; }
 	public bool? IsEdited { get; set; }
+	public int Version { get; set; }
+
 }

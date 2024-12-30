@@ -34,6 +34,19 @@ public abstract class RepositoryBase<T,TKey>: IRepositoryBase<T,TKey> where T : 
             update.Version += 1;
         }
         else { throw new VersionIsOldException(); }
+
+        foreach (var property in typeof(T).GetProperties())
+        {
+            var newValue = property.GetValue(update);
+             var defaultValue = property.PropertyType.IsValueType
+            ? Activator.CreateInstance(property.PropertyType)
+            : null;
+            if (newValue != null && !newValue.Equals(defaultValue))
+            {
+                property.SetValue(exist, newValue);
+            }
+        }
+        
         if (update is IUpdateTracking trackingEntity)
         {
             PayloadToken payloadToken = JwtTokenHelper.GetPayloadToken(_httpContextAccessor.HttpContext, _config);
@@ -42,7 +55,7 @@ public abstract class RepositoryBase<T,TKey>: IRepositoryBase<T,TKey> where T : 
             trackingEntity.UpdatedBy = payloadToken.Username;
             trackingEntity.UpdatedName = payloadToken.FullName;
         }
-        _dbContext.Entry(exist).CurrentValues.SetValues(update);
+
         await _dbContext.SaveChangesAsync();
     }
     public async Task<TKey> CreateAsync(T entity)
