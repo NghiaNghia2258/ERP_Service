@@ -11,7 +11,7 @@ try
 {
 	builder.AddInfrastructureServices(builder.Configuration);
 	builder.AddApplicationServices();
-	builder.Host.AddAppConfigurations();
+	builder.AddAppConfigurations();
 	builder.Services.AddConfigurationSettings(builder.Configuration);
 	builder.Services.AddInfrastructure(builder.Configuration);
 

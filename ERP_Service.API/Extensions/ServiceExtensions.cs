@@ -18,10 +18,18 @@ public static class ServiceExtensions
     {
         var databaseSettings = configuration.GetSection(nameof(DatabaseSettings))
             .Get<DatabaseSettings>();
+        if (databaseSettings == null)
+        {
+            throw new ArgumentNullException(nameof(databaseSettings), "DatabaseSettings configuration is missing");
+        }
         services.AddSingleton(databaseSettings);
 
         var apiConfiguration = configuration.GetSection(nameof(ApiConfiguration))
             .Get<ApiConfiguration>();
+        if (apiConfiguration == null)
+        {
+            throw new ArgumentNullException(nameof(apiConfiguration), "ApiConfiguration is missing");
+        }
         services.AddSingleton(apiConfiguration);
         return services;
     }
