@@ -83,8 +83,7 @@ public class UploadHelper
 	{
 		var extension = GetExtension(bytes);
 		bool isVideo = Array.Exists(videoExtensions, e => e.Equals(extension, StringComparison.OrdinalIgnoreCase));
-		//return isVideo && (await ValidateVideoAsync(bytes));
-		return true;
+		return isVideo && await ValidateVideoAsync(bytes);
 	}
 	public bool ValidateImage(byte[] bytes)
 	{
@@ -93,6 +92,7 @@ public class UploadHelper
 	}
 	public async Task<bool> ValidateVideoAsync(byte[] bytes)
 	{
+		await Task.CompletedTask;
 		return bytes.Length <= MAX_FILE_SIZE * 40 / 3; // 30Mb
 	}
 	public async Task<string> UploadVideoAsync(IFormFile file)

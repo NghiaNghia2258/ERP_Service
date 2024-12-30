@@ -20,12 +20,15 @@ public class MemoryCacheService : ICacheService
 
 	public async Task<T> GetAsync<T>(string key)
 	{
-		if (_memoryCache.TryGetValue(key, out T value))
+		if (_memoryCache.TryGetValue(key, out T? value))
 		{
-			return await Task.FromResult(value);
+			if (value != null)
+			{
+				return await Task.FromResult(value);
+			}
 		}
 
-		return await Task.FromResult(default(T));
+		return await Task.FromResult(default(T)!);
 	}
 
 	public async Task<bool> RemoveAsync(string key)

@@ -87,12 +87,12 @@ public abstract class RepositoryBase<T,TKey>: IRepositoryBase<T,TKey> where T : 
 
     public async Task<T?> GetByIdAsync(TKey primaryKey)
     {
-        return await _dbContext.Set<T>().FirstOrDefaultAsync(x => x.Id.Equals(primaryKey));
+        return await _dbContext.Set<T>().FirstOrDefaultAsync(x => x.Id!.Equals(primaryKey));
     }
 
     public async Task<T?> GetByIdAsync(TKey primaryKey, params Expression<Func<T, object>>[] includeProperties)
     {
-        var items = _dbContext.Set<T>().Where(x => x.Id.Equals(primaryKey));
+        var items = _dbContext.Set<T>().Where(x => x.Id!.Equals(primaryKey));
         items = includeProperties.Aggregate(items, (current, includeProperty) => current.Include(includeProperty));
         return await items.FirstOrDefaultAsync();
     }

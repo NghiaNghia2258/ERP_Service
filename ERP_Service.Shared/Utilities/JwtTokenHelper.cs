@@ -17,6 +17,10 @@ public static class JwtTokenHelper
 			throw new Exception("Unauthorized (Not login)");
 		}
 		var secretKey = configuration["JwtSettings:Key"];
+		if (string.IsNullOrEmpty(secretKey))
+		{
+			throw new Exception("Secret key is not configured.");
+		}
 		var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
 		var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
@@ -25,7 +29,10 @@ public static class JwtTokenHelper
 		claims.Add(new Claim("FullName", payloadToken.FullName ?? "No name"));
 		foreach (var item in payloadToken.Roles)
 		{
-			claims.Add(new Claim(ClaimTypes.Role, item.Name));
+			if (!string.IsNullOrEmpty(item.Name))
+			{
+				claims.Add(new Claim(ClaimTypes.Role, item.Name));
+			}
 		}
 
 		var token = new JwtSecurityToken(
@@ -37,7 +44,7 @@ public static class JwtTokenHelper
 	}
 	public static PayloadToken GetPayloadToken(HttpContext httpContext, IConfiguration configuration)
 	{
-		string bearerToken = httpContext.Request.Headers["Authorization"];
+		string bearerToken = httpContext.Request.Headers["Authorization"].FirstOrDefault() ?? string.Empty;
 		if (string.IsNullOrEmpty(bearerToken))
 		{
 			throw new Exception("Unauthorized (Not login)");
@@ -51,7 +58,7 @@ public static class JwtTokenHelper
 	{
 		var tokenHandler = new JwtSecurityTokenHandler();
 		var secretKey = configuration["JwtSettings:Key"];
-		var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
+		var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey ?? throw new Exception("Secret key is not configured.")));
 		var validationParameters = new TokenValidationParameters
 		{
 			ValidateIssuer = false,
@@ -66,8 +73,8 @@ public static class JwtTokenHelper
 
 		PayloadToken payloadToken = new PayloadToken()
 		{
-			UserLoginId = int.Parse(jwtToken.Claims.FirstOrDefault(c => c.Type == "UserLoginId").Value),
-			FullName = jwtToken.Claims.FirstOrDefault(c => c.Type == "FullName").Value,
+			UserLoginId = int.Parse(jwtToken.Claims.FirstOrDefault(c => c.Type == "UserLoginId")?.Value ?? throw new Exception("UserLoginId claim not found")),
+			FullName = jwtToken.Claims.FirstOrDefault(c => c.Type == "FullName")?.Value ?? "No name",
 		};
 
 		return payloadToken;

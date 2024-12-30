@@ -24,7 +24,7 @@ namespace ERP_Service.DAL.Repostiroty
 				{
 					RoleGroup = x.RoleGroup
 				}).FirstOrDefaultAsync();
-			return UserLogin.RoleGroup.Roles.Count > 0;
+			return UserLogin?.RoleGroup?.Roles?.Count > 0;
 		}
 
 		public async Task<UserLogin> SignIn(ParamasSignInRequest model)

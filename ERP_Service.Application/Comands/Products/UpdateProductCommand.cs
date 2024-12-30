@@ -44,7 +44,7 @@ public class UpdateProductCommandHandler : CommandHandlerBase, IRequestHandler<U
 					else if (image.IsDeleted ?? false)
 					{
 						UploadHelper uploadHelper = new UploadHelper();
-						uploadHelper.DeleteFile(image.ImageUrl);
+						uploadHelper.DeleteFile(image.ImageUrl ?? "");
 						await _unitOfWork.ProductImage.Delete(image.Id.Value);
 					}
 				}

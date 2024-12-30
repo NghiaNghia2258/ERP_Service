@@ -25,6 +25,6 @@ public class GetByIdProductDto
 	public string? DeletedBy { get; set; }
 	public string? DeletedName { get; set; }
 
-	public IEnumerable<ProductVariantDto> ProductVariants { get; set; }
-	public IEnumerable<ProductImageDto> productImages { get; set; }
+	public IEnumerable<ProductVariantDto> ProductVariants { get; set; } = null!;
+	public IEnumerable<ProductImageDto> productImages { get; set; } = null!;
 }

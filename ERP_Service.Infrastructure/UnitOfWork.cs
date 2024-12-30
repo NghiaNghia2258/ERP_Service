@@ -33,12 +33,14 @@ public class UnitOfWork : IUnitOfWork
 
 
 
-	public UnitOfWork(AppDbContext dbContext, IHttpContextAccessor httpContextAccessor, IConfiguration config)
-	{
-		_dbContext = dbContext;
-		_httpContextAccessor = httpContextAccessor;
-		_config = config;
-	}
+	#pragma warning disable CS8618 
+		public UnitOfWork(AppDbContext dbContext, IHttpContextAccessor httpContextAccessor, IConfiguration config)
+		{
+			_dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+			_httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+			_config = config ?? throw new ArgumentNullException(nameof(config));
+		}
+	#pragma warning restore CS8618 
 	public DbContext GetDbContext()
 	{
 		return _dbContext;
