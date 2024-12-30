@@ -24,14 +24,14 @@ public class UpdateCustomerCommandHandler : CommandHandlerBase, IRequestHandler<
 
 	public async Task<ApiResult> Handle(UpdateCustomerCommand request, CancellationToken cancellationToken)
 	{
-		var customer = await _unitOfWork.CustomerRepository.GetById(request.Model.Id);
+		var customer = await _unitOfWork.Customer.GetById(request.Model.Id);
 		if (customer == null)
 		{
 			return new ApiNotFoundResult("Customer not found");
 		}
 
 		_mapper.Map(request.Model, customer);
-		var isSuccess = await _unitOfWork.CustomerRepository.Update(customer);
+		var isSuccess = await _unitOfWork.Customer.Update(customer);
 
 		if (!isSuccess)
 		{

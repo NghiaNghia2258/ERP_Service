@@ -14,10 +14,10 @@ public class ProductRepository : RepositoryBase<Product, int>, IProductRepositor
 	{
 	}
 
-	public async Task<bool> Create(Product model)
+	public async Task<int> Create(Product model)
 	{
-		await CreateAsync(model); 
-		return true;
+		int id = await CreateAsync(model); 
+		return id;
 	}
 
 	public async Task<bool> Delete(int id)
@@ -47,6 +47,29 @@ public class ProductRepository : RepositoryBase<Product, int>, IProductRepositor
 	public async Task<Product> GetById(int id)
 	{
 		return await _dbContext.Products
+			.Include(x => x.ProductVariants)
+			.Include(x => x.ProductImages)
+			.Select(x => 
+				new Product()
+				{
+					Id = x.Id,
+					Name = x.Name,
+					ProductVariants = x.ProductVariants.Select(y => new ProductVariant()
+					{
+						Id = y.Id,
+						Color = y.Color,
+						Size = y.Size,
+						ImageUrl = y.ImageUrl,
+						Price = y.Price,
+						Inventory = y.Inventory
+					}).ToList(),
+					ProductImages = x.ProductImages.Select(y => new ProductImage
+					{
+						Id = y.Id,
+						ImageUrl = y.ImageUrl
+					}).ToList()
+				}
+			)
 			.FirstOrDefaultAsync(x => x.Id == id) ?? new Product();
 	}
 

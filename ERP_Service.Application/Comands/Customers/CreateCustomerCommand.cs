@@ -28,7 +28,7 @@ public class CreateCustomerCommandHandle : CommandHandlerBase, IRequestHandler<C
 	{
 		ApiResult res = new ApiSuccessResult();
 		Customer newCustomer = _mapper.Map<Customer>(request.CreateCustomerDto);
-		bool isSuccess = await _unitOfWork.CustomerRepository.Create(newCustomer);
+		bool isSuccess = await _unitOfWork.Customer.Create(newCustomer);
 		if(!isSuccess)
 		{
 			res = new ApiErrorResult();

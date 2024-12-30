@@ -39,7 +39,7 @@ public class GetAllCustomersQueryHandler : QueryHandlerBase, IRequestHandler<Get
 				Message = "Get data from cache."
 			};
 		}
-		var customers = await _unitOfWork.CustomerRepository.GetAll(request.Option);
+		var customers = await _unitOfWork.Customer.GetAll(request.Option);
 		if (customers == null)
 		{
 			return new ApiNotFoundResult("Customers not found.");

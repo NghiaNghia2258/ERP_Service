@@ -26,7 +26,7 @@ public class GetByIdCustomerCommandHandler : QueryHandlerBase, IRequestHandler<G
 	{
 		ApiResult res = new ApiSuccessResult();
 
-		var customer = await _unitOfWork.CustomerRepository.GetById(request.Id);
+		var customer = await _unitOfWork.Customer.GetById(request.Id);
 
 		if (customer == null || customer.Id == Guid.Empty)
 		{

@@ -21,13 +21,13 @@ public class DeleteCustomerCommandHandler : CommandHandlerBase, IRequestHandler<
 	}
 	public async Task<ApiResult> Handle(DeleteCustomerCommand request, CancellationToken cancellationToken)
 	{
-		var customer = await _unitOfWork.CustomerRepository.GetById(request.Id);
+		var customer = await _unitOfWork.Customer.GetById(request.Id);
 		if (customer == null)
 		{
 			return new ApiNotFoundResult("Customer not found");
 		}
 
-		var isSuccess = await _unitOfWork.CustomerRepository.Delete(request.Id);
+		var isSuccess = await _unitOfWork.Customer.Delete(request.Id);
 		if (!isSuccess)
 		{
 			return new ApiErrorResult();
