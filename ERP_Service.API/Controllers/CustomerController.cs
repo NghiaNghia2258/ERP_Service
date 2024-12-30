@@ -45,7 +45,7 @@ namespace ERP_Service.API.Controllers
 		{
 			await _authoziService.IsAuthozi(role: RoleNameConst.CREATE_CUSTOMER);
 
-			var result = await _mediator.Send(new CreateCustomerCommand(model,_authoziService.PayloadToken));
+			var result = await _mediator.Send(new CreateCustomerCommand(model));
 			return Ok(result);
 		}
 
@@ -54,7 +54,7 @@ namespace ERP_Service.API.Controllers
 		{
 			await _authoziService.IsAuthozi(role: RoleNameConst.UPDATE_CUSTOMER);
 
-			var result = await _mediator.Send(new UpdateCustomerCommand(model, _authoziService.PayloadToken));
+			var result = await _mediator.Send(new UpdateCustomerCommand(model));
 			return Ok(result);
 		}
 
@@ -63,7 +63,7 @@ namespace ERP_Service.API.Controllers
 		{
 			await _authoziService.IsAuthozi(role: RoleNameConst.DELETE_CUSTOMER);
 
-			var result = await _mediator.Send(new DeleteCustomerCommand(id,_authoziService.PayloadToken));
+			var result = await _mediator.Send(new DeleteCustomerCommand(id));
 			return Ok(result);
 		}
 	}

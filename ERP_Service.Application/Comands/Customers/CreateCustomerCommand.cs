@@ -12,11 +12,9 @@ namespace ERP_Service.Application.Comands.Customers;
 public class CreateCustomerCommand : IRequest<ApiResult>
 {
 	public CreateCustomerDto CreateCustomerDto { get; set; }
-	public PayloadToken PayloadToken { get; set; }
-	public CreateCustomerCommand(CreateCustomerDto createCustomerDto, PayloadToken payloadToken)
+	public CreateCustomerCommand(CreateCustomerDto createCustomerDto)
 	{
 		CreateCustomerDto = createCustomerDto;
-		PayloadToken = payloadToken;
 	}
 }
 
@@ -30,7 +28,7 @@ public class CreateCustomerCommandHandle : CommandHandlerBase, IRequestHandler<C
 	{
 		ApiResult res = new ApiSuccessResult();
 		Customer newCustomer = _mapper.Map<Customer>(request.CreateCustomerDto);
-		bool isSuccess = await _unitOfWork.CustomerRepository.Create(newCustomer ,request.PayloadToken);
+		bool isSuccess = await _unitOfWork.CustomerRepository.Create(newCustomer);
 		if(!isSuccess)
 		{
 			res = new ApiErrorResult();

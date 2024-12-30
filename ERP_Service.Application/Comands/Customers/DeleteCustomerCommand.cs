@@ -9,11 +9,9 @@ namespace ERP_Service.Application.Comands.Customers;
 public class DeleteCustomerCommand : IRequest<ApiResult>
 {
 	public Guid Id { get; set; }
-	public PayloadToken PayloadToken { get; set; }
-	public DeleteCustomerCommand(Guid id, PayloadToken payloadToken)
+	public DeleteCustomerCommand(Guid id)
 	{
 		Id = id;
-		PayloadToken = payloadToken;
 	}
 }
 public class DeleteCustomerCommandHandler : CommandHandlerBase, IRequestHandler<DeleteCustomerCommand, ApiResult>
@@ -29,7 +27,7 @@ public class DeleteCustomerCommandHandler : CommandHandlerBase, IRequestHandler<
 			return new ApiNotFoundResult("Customer not found");
 		}
 
-		var isSuccess = await _unitOfWork.CustomerRepository.Delete(request.Id, request.PayloadToken);
+		var isSuccess = await _unitOfWork.CustomerRepository.Delete(request.Id);
 		if (!isSuccess)
 		{
 			return new ApiErrorResult();

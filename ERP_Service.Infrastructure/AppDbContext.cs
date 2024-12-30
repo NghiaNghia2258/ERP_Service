@@ -1,6 +1,7 @@
 ﻿using ERP_Service.DAL.Data;
 using ERP_Service.Domain.Abstractions.Model;
 using ERP_Service.Domain.Models;
+using ERP_Service.Domain.Models.Products;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -24,6 +25,15 @@ public partial class AppDbContext : DbContext
 
 	public virtual DbSet<UserLogin> UserLogins { get; set; }
 	public virtual DbSet<Customer> Customers { get; set; }
+
+	#region DbSet module Product
+	public virtual DbSet<Product> Products { get; set; }
+	public virtual DbSet<ProductVariant> ProductVariants { get; set; }
+	public virtual DbSet<ProductCategory> ProductCategories { get; set; }
+	public virtual DbSet<ProductImage> ProductImages { get; set; }
+	public virtual DbSet<ProductRate> ProductRates { get; set; }
+
+	#endregion
 
 	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		=> optionsBuilder.UseSqlServer("Data Source=.\\SQLEXPRESS;Initial Catalog=AppDb;Integrated Security=True;Trust Server Certificate=True");

@@ -3,7 +3,7 @@ using ERP_Service.Domain.Abstractions.Model;
 
 namespace ERP_Service.Domain.Models.Products;
 
-public partial class ProductVariant : EntityBase<Guid>, IAuditableEntity
+public partial class ProductVariant : EntityBase<int>, IAuditableEntity
 {
     public string Size { get; set; } = null!;
 

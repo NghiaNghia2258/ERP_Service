@@ -10,12 +10,10 @@ namespace ERP_Service.Application.Comands.Customers;
 public class UpdateCustomerCommand : IRequest<ApiResult>
 {
 	public CustomerDto Model { get; set; }
-	public PayloadToken PayloadToken { get; set; }
 
-	public UpdateCustomerCommand(CustomerDto model, PayloadToken payloadToken)
+	public UpdateCustomerCommand(CustomerDto model)
 	{
 		Model = model;
-		PayloadToken = payloadToken;
 	}
 }
 public class UpdateCustomerCommandHandler : CommandHandlerBase, IRequestHandler<UpdateCustomerCommand, ApiResult>
@@ -33,7 +31,7 @@ public class UpdateCustomerCommandHandler : CommandHandlerBase, IRequestHandler<
 		}
 
 		_mapper.Map(request.Model, customer);
-		var isSuccess = await _unitOfWork.CustomerRepository.Update(customer, request.PayloadToken);
+		var isSuccess = await _unitOfWork.CustomerRepository.Update(customer);
 
 		if (!isSuccess)
 		{

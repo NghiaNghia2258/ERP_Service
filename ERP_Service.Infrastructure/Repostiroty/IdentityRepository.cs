@@ -2,13 +2,15 @@
 using ERP_Service.Domain.Models;
 using ERP_Service.Infrastructure;
 using ERP_Service.Shared.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace ERP_Service.DAL.Repostiroty
 {
 	public class IdentityRepository :RepositoryBase<UserLogin,int>, IAuthoziRepository, IAuthenRepository
 	{
-		public IdentityRepository(AppDbContext dbContext) : base(dbContext)
+		public IdentityRepository(AppDbContext dbContext, IHttpContextAccessor httpContextAccessor, IConfiguration config) : base(dbContext, httpContextAccessor, config)
 		{
 		}
 

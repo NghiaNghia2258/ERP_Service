@@ -4,7 +4,7 @@ namespace ERP_Service.Domain.Abstractions.RepositoryBase;
 
 public interface IWriteBase<T, TKey>
 {
-	Task<TKey> CreateAsync(T entity, PayloadToken payloadToken);
-	Task DeleteAsync(TKey entity, PayloadToken payloadToken);
-	Task UpdateAsync(T update, PayloadToken payloadToken);
+	Task<TKey> CreateAsync(T entity);
+	Task DeleteAsync(TKey entity);
+	Task UpdateAsync(T update);
 }
