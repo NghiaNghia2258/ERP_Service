@@ -1,5 +1,6 @@
 ﻿using ERP_Service.Domain.Abstractions;
 using ERP_Service.Domain.Abstractions.Model;
+using ERP_Service.Domain.Exceptions.Products;
 
 namespace ERP_Service.Domain.Models.Products;
 
@@ -26,7 +27,18 @@ public partial class Product : EntityBase<int>, IAuditableEntity
     public string? DeletedBy { get; set; }
     public string? DeletedName { get; set; }
 
-    public virtual ProductCategory Category { get; set; } = null!;
+    public double Rate => ProductRates.Count > 0 ? ProductRates.Average(x => x.Rating) : 0;
+    public double RateCount => ProductRates.Count;
+
+    public void DeductInventory(int quantity)
+    {
+        if (quantity > TotalInventory) {
+            throw new OutOfStockException();
+		}
+		TotalInventory -= quantity;
+	}
+
+	public virtual ProductCategory Category { get; set; } = null!;
     public virtual ICollection<ProductImage> ProductImages { get; set; } = new List<ProductImage>();
 
     public virtual ICollection<ProductRate> ProductRates { get; set; } = new List<ProductRate>();

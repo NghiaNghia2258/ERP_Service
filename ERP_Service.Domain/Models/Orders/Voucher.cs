@@ -1,5 +1,6 @@
 ﻿using ERP_Service.Domain.Abstractions;
 using ERP_Service.Domain.Abstractions.Model;
+using ERP_Service.Domain.Exceptions.Orders;
 
 namespace ERP_Service.Domain.Models.Orders;
 
@@ -31,6 +32,26 @@ public class Voucher: EntityBase<Guid>, IAuditableEntity
 	public DateTime? DeletedAt { get; set; }
 	public string? DeletedBy { get; set; }
 	public string? DeletedName { get; set; }
+
+	public void Use()
+	{
+		if (UsedCount > UsageLimit)
+		{
+			throw new UseVocherException("Hết lượt sử dụng");
+		}
+		else if (StartDate > DateTime.Now)
+		{
+			throw new UseVocherException("Chưa đến ngày sử dụng");
+		}
+		else if (ExpirationDate >= DateTime.Now)
+		{
+			throw new UseVocherException("Hết hạn sử dụng");
+		}
+		else
+		{
+			UsedCount++;
+		}
+	}
 
 	public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 

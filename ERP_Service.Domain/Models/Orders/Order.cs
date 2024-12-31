@@ -8,7 +8,7 @@ public partial class Order : EntityBase<Guid>, IAuditableEntity
 	public string Code { get; set; } = null!;
 	public string? Note { get; set; }
 	public string? Name { get; set; }
-	public Guid CustomerId { get; set; }
+	public Guid? CustomerId { get; set; }
 	public string? CustomerName { get; set; }
 	public string? CustomerPhone { get; set; }
 	public string? CustomerNote { get; set; }
