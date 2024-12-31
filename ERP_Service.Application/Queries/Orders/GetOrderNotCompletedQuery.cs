@@ -9,24 +9,24 @@ using MediatR;
 
 namespace ERP_Service.Application.Queries.Orders;
 
-public class GetAllOrderQuery: IRequest<ApiResult>
+public class GetOrderNotCompletedQuery: IRequest<ApiResult>
 {
-	public GetAllOrderQuery(OptionFilterOrder option)
+	public GetOrderNotCompletedQuery(OptionFilterOrder option)
 	{
 		Option = option;
 	}
 
 	public OptionFilterOrder Option { get; set; }
 }
-public class GetAllOrderQueryHandle :QueryHandlerBase, IRequestHandler<GetAllOrderQuery, ApiResult>
+public class GetOrderNotCompletedQueryHandle :QueryHandlerBase, IRequestHandler<GetOrderNotCompletedQuery, ApiResult>
 {
-	public GetAllOrderQueryHandle(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService) : base(unitOfWork, mapper, cacheService)
+	public GetOrderNotCompletedQueryHandle(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService) : base(unitOfWork, mapper, cacheService)
 	{
 	}
 
-	public async Task<ApiResult> Handle(GetAllOrderQuery request, CancellationToken cancellationToken)
+	public async Task<ApiResult> Handle(GetOrderNotCompletedQuery request, CancellationToken cancellationToken)
 	{
-		IEnumerable<Order> orders = await _unitOfWork.Order.GetAll(request.Option);
+		IEnumerable<Order> orders = await _unitOfWork.Order.GetOrderNotCompleted(request.Option);
 		IEnumerable<GetAllOrderDto> orderDto = _mapper.Map<IEnumerable<GetAllOrderDto>>(orders);
 		return new ApiSuccessResult<IEnumerable<GetAllOrderDto>>(orderDto);
 	}
