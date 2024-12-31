@@ -32,7 +32,7 @@ namespace ERP_Service.API.Controllers
 		{
 			await _authoziService.IsAuthozi(role: RoleNameConst.CREATE_CUSTOMER);
 
-			var result = await _mediator.Send(new CreateOrderCommand());
+			var result = await _mediator.Send(new CreateOrderUsePOSCommand());
 			return Ok(result);
 		}
 	}

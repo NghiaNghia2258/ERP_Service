@@ -6,16 +6,16 @@ using MediatR;
 
 namespace ERP_Service.Application.Comands.Orders;
 
-public class CreateOrderCommand: IRequest<ApiResult>
+public class CreateOrderUsePOSCommand: IRequest<ApiResult>
 {
 }
-public class CreateOrderCommandHandle : CommandHandlerBase, IRequestHandler<CreateOrderCommand, ApiResult>
+public class CreateOrderUsePOSCommandHandle : CommandHandlerBase, IRequestHandler<CreateOrderUsePOSCommand, ApiResult>
 {
-	public CreateOrderCommandHandle(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
+	public CreateOrderUsePOSCommandHandle(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
 	{
 	}
 
-	public async Task<ApiResult> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
+	public async Task<ApiResult> Handle(CreateOrderUsePOSCommand request, CancellationToken cancellationToken)
 	{
 		// Tạo mã code
 		// INV: Hóa đơn bán
