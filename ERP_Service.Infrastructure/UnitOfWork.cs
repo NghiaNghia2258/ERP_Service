@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using ERP_Service.Domain.Abstractions.Repository.Products;
 using ERP_Service.Infrastructure.Repostiroty.Products;
+using ERP_Service.Domain.Abstractions.Repository.Orders;
+using ERP_Service.Infrastructure.Repostiroty.Orders;
 
 namespace ERP_Service.Infrastructure;
 
@@ -16,7 +18,7 @@ public class UnitOfWork : IUnitOfWork
 	private readonly IHttpContextAccessor _httpContextAccessor;
 	private readonly IConfiguration _config;
 
-
+	#region Repository module Products
 	private readonly ICustomerRepository _customerRepository;
 	private readonly IProductRepository _productRepository;
 	private readonly IProductVariantRepository _productVariantRepository;
@@ -30,11 +32,18 @@ public class UnitOfWork : IUnitOfWork
 	public IProductCategoryRepository ProductCategory => _productCategoryRepository ?? new ProductCategoryRepository(_dbContext, _httpContextAccessor, _config);
 	public IProductImageRepository ProductImage => _productImageRepository ?? new ProductImageRepository(_dbContext, _httpContextAccessor, _config);
 	public IProductRateRepository ProductRate => _productRateRepository ?? new ProductRateRepository(_dbContext, _httpContextAccessor, _config);
+	#endregion
+	#region Repository module Orders
+	private readonly IOrderRepository _orderRepository;
+	private readonly IOrderItemRepository _orderItemRepository;
+	private readonly IVoucherRepository _voucherRepository;
 
-
-
-	#pragma warning disable CS8618 
-		public UnitOfWork(AppDbContext dbContext, IHttpContextAccessor httpContextAccessor, IConfiguration config)
+	public IOrderRepository Order => _orderRepository ?? new OrderRepository(_dbContext, _httpContextAccessor, _config);
+	public IOrderItemRepository OrderItem => _orderItemRepository ?? new OrderItemRepository(_dbContext, _httpContextAccessor, _config);
+	public IVoucherRepository Voucher => _voucherRepository ?? new VoucherRepository(_dbContext, _httpContextAccessor, _config);
+	#endregion
+#pragma warning disable CS8618
+	public UnitOfWork(AppDbContext dbContext, IHttpContextAccessor httpContextAccessor, IConfiguration config)
 		{
 			_dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
 			_httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
