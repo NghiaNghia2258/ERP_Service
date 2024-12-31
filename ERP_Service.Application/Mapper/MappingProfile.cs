@@ -1,10 +1,14 @@
 ﻿using AutoMapper;
 using ERP_Service.Application.Mapper.Model.Customers;
+using ERP_Service.Application.Mapper.Model.Orders;
+using ERP_Service.Application.Mapper.Model.Orders.OrderItems;
+using ERP_Service.Application.Mapper.Model.Orders.Voucher;
 using ERP_Service.Application.Mapper.Model.Products;
 using ERP_Service.Application.Mapper.Model.Products.Categories;
 using ERP_Service.Application.Mapper.Model.Products.Images;
 using ERP_Service.Application.Mapper.Model.Products.Variants;
 using ERP_Service.Domain.Models;
+using ERP_Service.Domain.Models.Orders;
 using ERP_Service.Domain.Models.Products;
 
 namespace ERP_Service.Application.Mapper;
@@ -30,5 +34,9 @@ public class MappingProfile : Profile
 
 		CreateMap<ProductCategory, ProductCategoryDto>();
 
+		CreateMap<Order, GetByIdOrderDto>().ReverseMap();
+		CreateMap<OrderItem, OrderItemDto>().ReverseMap();
+		CreateMap<Voucher, VoucherDto>().ReverseMap();
+		CreateMap<Order, GetAllOrderDto>();
 	}
 }
