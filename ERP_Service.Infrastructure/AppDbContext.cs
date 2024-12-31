@@ -1,6 +1,7 @@
 ﻿using ERP_Service.DAL.Data;
 using ERP_Service.Domain.Abstractions.Model;
 using ERP_Service.Domain.Models;
+using ERP_Service.Domain.Models.Orders;
 using ERP_Service.Domain.Models.Products;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -33,6 +34,12 @@ public partial class AppDbContext : DbContext
 	public virtual DbSet<ProductImage> ProductImages { get; set; }
 	public virtual DbSet<ProductRate> ProductRates { get; set; }
 
+	#endregion
+
+	#region DbSet module Order
+	public virtual DbSet<Order> Orders { get; set; }
+	public virtual DbSet<OrderItem> OrderItems { get; set; }
+	public virtual DbSet<Voucher> Vouchers { get; set; }
 	#endregion
 
 	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

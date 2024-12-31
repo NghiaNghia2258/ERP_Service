@@ -1,5 +1,6 @@
 ﻿using ERP_Service.Domain.Abstractions;
 using ERP_Service.Domain.Abstractions.Model;
+using ERP_Service.Domain.Models.Orders;
 
 namespace ERP_Service.Domain.Models.Products;
 
@@ -26,5 +27,5 @@ public partial class ProductVariant : EntityBase<int>, IAuditableEntity
     public string? DeletedName { get; set; }
 
     public virtual Product? Product { get; set; }
-
+	public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 }

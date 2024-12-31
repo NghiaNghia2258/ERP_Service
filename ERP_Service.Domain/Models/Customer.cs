@@ -1,5 +1,7 @@
 ﻿using ERP_Service.Domain.Abstractions;
 using ERP_Service.Domain.Abstractions.Model;
+using ERP_Service.Domain.Models.Orders;
+using ERP_Service.Domain.Models.Products;
 
 namespace ERP_Service.Domain.Models;
 
@@ -24,4 +26,6 @@ public class Customer : EntityBase<Guid>, ICreateTracking, ISoftDelete
 	public string? DeletedName { get; set; }
 
 	public virtual UserLogin? UserLogin { get; set; }
+	public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
+	public virtual ICollection<ProductRate> ProductRates { get; set; } = new List<ProductRate>();
 }
