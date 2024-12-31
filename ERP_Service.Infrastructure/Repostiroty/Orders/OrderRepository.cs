@@ -1,6 +1,7 @@
 ﻿using ERP_Service.Domain.Abstractions.Repository.Orders;
 using ERP_Service.Domain.Const;
 using ERP_Service.Domain.Models.Orders;
+using ERP_Service.Domain.PagingRequest;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -44,5 +45,39 @@ public class OrderRepository : RepositoryBase<Order, Guid>, IOrderRepository
 		return await _dbContext.Orders
 		.Where(x => x.CreatedAt.Date >= startOfMonth && x.CreatedAt.Date <= endOfMonth)
 		.CountAsync();
+	}
+	public async Task<IEnumerable<Order>> GetAll(OptionFilterOrder option)
+	{
+
+		var query = _dbContext.Orders
+			.Select(o => new Order
+			{
+				Id = o.Id,
+				Code = o.Code,
+				Name = o.Name,
+				PaymentStatus = o.PaymentStatus,
+			});
+		TotalRecords.ORDER = await query.CountAsync();
+		return await query
+			.Skip((option.PageIndex - 1) * option.PageSize)
+			.Take(option.PageSize)
+			.ToListAsync();
+	}
+	public async Task<IEnumerable<Order>> GetOrderNotCompleted(OptionFilterOrder option)
+	{
+		var query = _dbContext.Orders
+		.Where(x => x.PaymentStatus != StatusOrder.Completed)
+			.Select(o => new Order
+			{
+				Id = o.Id,
+				Code = o.Code,
+				Name = o.Name,
+				PaymentStatus = o.PaymentStatus,
+			});
+		TotalRecords.ORDER = await query.CountAsync();
+		return await query
+			.Skip((option.PageIndex - 1) * option.PageSize)
+			.Take(option.PageSize)
+			.ToListAsync();
 	}
 }

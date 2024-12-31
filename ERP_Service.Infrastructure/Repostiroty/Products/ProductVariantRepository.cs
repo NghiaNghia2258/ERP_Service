@@ -29,6 +29,12 @@ public class ProductVariantRepository : RepositoryBase<ProductVariant, int>, IPr
 		return await _dbContext.ProductVariants
 			.FirstOrDefaultAsync(x => x.Id == id) ?? new ProductVariant(); 
 	}
+	public async Task<ProductVariant> GetByIdWithProduct(int id)
+	{
+		return await _dbContext.ProductVariants
+			.Include(x => x.Product)
+			.FirstOrDefaultAsync(x => x.Id == id) ?? new ProductVariant();
+	}
 
 	public async Task<bool> Update(ProductVariant model)
 	{

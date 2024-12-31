@@ -17,11 +17,11 @@ public class CreateOrderUsePOSCommandHandle : CommandHandlerBase, IRequestHandle
 
 	public async Task<ApiResult> Handle(CreateOrderUsePOSCommand request, CancellationToken cancellationToken)
 	{
-		// Tạo mã code
-		// INV: Hóa đơn bán
-		// POS: bán tại quầy - WEB: khách hàng đặt trên web
-		// currentDate: Ngày tạo 
-		// invoiceNumber: Số thứ tự hóa đơn trong tháng 
+		// Tạo mã code theo định dạng: INV-POS-YYYYMMDD-XXXXXX
+		// - "INV": Tiền tố chỉ hóa đơn.
+		// - "POS": Chỉ hóa đơn được bán tại quầy (hoặc "WEB" cho đơn hàng đặt online).
+		// - "YYYYMMDD": Ngày hiện tại khi tạo hóa đơn.
+		// - "XXXXXX": Số thứ tự hóa đơn trong tháng, được định dạng 6 chữ số (thêm số 0 ở đầu nếu cần).
 		int _monthlyInvoiceCounter = await _unitOfWork.Order.CountOrderForCurrentMonth();
 		string currentDate = DateTime.Now.ToString("yyyyMMdd");
 		string invoiceNumber = _monthlyInvoiceCounter.ToString("D6");
