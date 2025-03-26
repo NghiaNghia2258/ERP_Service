@@ -14,7 +14,6 @@ public class UserLogin : EntityBase<int>, ISoftDelete
 	public string? DeletedBy { get; set; }
 	public string? DeletedName { get; set; }
 
-	public virtual ICollection<Customer> Customers { get; set; } = new List<Customer>();
 	public virtual RoleGroup RoleGroup { get; set; } = null!;
 
 }
