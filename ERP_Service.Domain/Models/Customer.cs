@@ -25,7 +25,6 @@ public class Customer : EntityBase<Guid>, ICreateTracking, ISoftDelete
 	public string? DeletedBy { get; set; }
 	public string? DeletedName { get; set; }
 
-	public virtual UserLogin? UserLogin { get; set; }
 	public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 	public virtual ICollection<ProductRate> ProductRates { get; set; } = new List<ProductRate>();
 }
