@@ -1,6 +1,7 @@
 ﻿using ERP_Service.Domain.Abstractions;
 using ERP_Service.Domain.Abstractions.Model;
 using ERP_Service.Domain.Exceptions.Products;
+using ERP_Service.Domain.Models.Stores;
 
 namespace ERP_Service.Domain.Models.Products;
 
@@ -26,6 +27,8 @@ public partial class Product : EntityBase<int>, IAuditableEntity
     public DateTime? DeletedAt { get; set; }
     public string? DeletedBy { get; set; }
     public string? DeletedName { get; set; }
+    public Guid StoreId { get; set; }
+
 
     public double Rate => ProductRates.Count > 0 ? ProductRates.Average(x => x.Rating) : 0;
     public double RateCount => ProductRates.Count;
@@ -39,6 +42,7 @@ public partial class Product : EntityBase<int>, IAuditableEntity
 	}
 
 	public virtual ProductCategory Category { get; set; } = null!;
+	public virtual Store Store { get; set; } = null!;
     public virtual ICollection<ProductImage> ProductImages { get; set; } = new List<ProductImage>();
 
     public virtual ICollection<ProductRate> ProductRates { get; set; } = new List<ProductRate>();

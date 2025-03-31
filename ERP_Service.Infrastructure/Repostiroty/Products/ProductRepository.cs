@@ -68,10 +68,7 @@ public class ProductRepository : RepositoryBase<Product, int>, IProductRepositor
 					ProductVariants = x.ProductVariants.Select(y => new ProductVariant()
 					{
 						Id = y.Id,
-						Color = y.Color,
-						Size = y.Size,
 						ImageUrl = y.ImageUrl,
-						Price = y.Price,
 						Inventory = y.Inventory,
 						Version = y.Version,
 					}).ToList(),

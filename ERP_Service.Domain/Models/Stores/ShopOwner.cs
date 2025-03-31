@@ -10,4 +10,5 @@ public class ShopOwner : EntityBase<Guid>, ISoftDelete
     public DateTime? DeletedAt { get; set; }
     public string? DeletedBy { get; set; }
     public string? DeletedName { get; set; }
+    public virtual ICollection<Store> Stores { get; set; }
 }

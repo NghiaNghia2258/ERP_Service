@@ -3,6 +3,7 @@ using ERP_Service.Domain.Abstractions.Model;
 using ERP_Service.Domain.Models;
 using ERP_Service.Domain.Models.Orders;
 using ERP_Service.Domain.Models.Products;
+using ERP_Service.Domain.Models.Stores;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -40,10 +41,16 @@ public partial class AppDbContext : DbContext
 	public virtual DbSet<Order> Orders { get; set; }
 	public virtual DbSet<OrderItem> OrderItems { get; set; }
 	public virtual DbSet<Voucher> Vouchers { get; set; }
-	#endregion
+    #endregion
+    #region DbSet module Store
+    public virtual DbSet<Store> Stores { get; set; }
+    public virtual DbSet<ShopOwner> ShopOwners { get; set; }
+    public virtual DbSet<Employee> Employees { get; set; }
 
-	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-		=> optionsBuilder.UseSqlServer("Data Source=.\\SQLEXPRESS;Initial Catalog=AppDb;Integrated Security=True;Trust Server Certificate=True");
+    #endregion
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+		=> optionsBuilder.UseSqlServer("Data Source=NGHIA\\MSSQLSERVER01;Initial Catalog=AppDb2;Integrated Security=True;Trust Server Certificate=True");
 
 
 
@@ -81,8 +88,12 @@ public partial class AppDbContext : DbContext
 
 			entity.HasOne(d => d.RoleGroup).WithMany(p => p.UserLogins).HasForeignKey(d => d.RoleGroupId);
 		});
-
-		var softDeleteEntities = typeof(ISoftDelete).Assembly.GetTypes()
+        modelBuilder.Entity<Product>()
+		.HasOne(p => p.Store)
+		.WithMany(s => s.Products)
+		.HasForeignKey(p => p.StoreId)
+		.OnDelete(DeleteBehavior.NoAction);
+        var softDeleteEntities = typeof(ISoftDelete).Assembly.GetTypes()
 		.Where(type => typeof(ISoftDelete).IsAssignableFrom(type)
 			&& type.IsClass
 			&& !type.IsAbstract);

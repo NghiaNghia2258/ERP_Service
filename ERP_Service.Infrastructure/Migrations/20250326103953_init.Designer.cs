@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ERP_Service.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241231045143_aa")]
-    partial class aa
+    [Migration("20250326103953_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -79,8 +79,6 @@ namespace ERP_Service.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("UserLoginId");
 
                     b.ToTable("Customers");
                 });
@@ -385,6 +383,9 @@ namespace ERP_Service.Infrastructure.Migrations
                     b.Property<string>("NameEn")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("StoreId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<double?>("TotalInventory")
                         .HasColumnType("float");
 
@@ -404,6 +405,8 @@ namespace ERP_Service.Infrastructure.Migrations
 
                     b.HasIndex("CategoryId");
 
+                    b.HasIndex("StoreId");
+
                     b.ToTable("Products");
                 });
 
@@ -419,56 +422,17 @@ namespace ERP_Service.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("StoreId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("Version")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProductCategories");
+                    b.HasIndex("StoreId");
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Mùa đông",
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Mùa hè",
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "Mùa xuân",
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "Mùa thu",
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Name = "Thời trang nữ",
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Name = "Thời trang trẻ em",
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Name = "Thời trang nam",
-                            Version = 0
-                        });
+                    b.ToTable("ProductCategories");
                 });
 
             modelBuilder.Entity("ERP_Service.Domain.Models.Products.ProductImage", b =>
@@ -536,10 +500,6 @@ namespace ERP_Service.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Color")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -575,7 +535,19 @@ namespace ERP_Service.Infrastructure.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Size")
+                    b.Property<string>("PropertyName1")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PropertyName2")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PropertyValue1")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PropertyValue2")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -676,6 +648,101 @@ namespace ERP_Service.Infrastructure.Migrations
                             Name = "User",
                             Version = 0
                         });
+                });
+
+            modelBuilder.Entity("ERP_Service.Domain.Models.Stores.Employee", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("Employees");
+                });
+
+            modelBuilder.Entity("ERP_Service.Domain.Models.Stores.ShopOwner", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DeletedName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ShopOwners");
+                });
+
+            modelBuilder.Entity("ERP_Service.Domain.Models.Stores.Store", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DeletedName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ShopOwnerId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("ShopOwnerId1")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ShopOwnerId1");
+
+                    b.ToTable("Stores");
                 });
 
             modelBuilder.Entity("ERP_Service.Domain.Models.UserLogin", b =>
@@ -781,15 +848,6 @@ namespace ERP_Service.Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("ERP_Service.Domain.Models.Customer", b =>
-                {
-                    b.HasOne("ERP_Service.Domain.Models.UserLogin", "UserLogin")
-                        .WithMany("Customers")
-                        .HasForeignKey("UserLoginId");
-
-                    b.Navigation("UserLogin");
-                });
-
             modelBuilder.Entity("ERP_Service.Domain.Models.Orders.Order", b =>
                 {
                     b.HasOne("ERP_Service.Domain.Models.Customer", "Customer")
@@ -832,7 +890,26 @@ namespace ERP_Service.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("ERP_Service.Domain.Models.Stores.Store", "Store")
+                        .WithMany("Products")
+                        .HasForeignKey("StoreId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.Navigation("Category");
+
+                    b.Navigation("Store");
+                });
+
+            modelBuilder.Entity("ERP_Service.Domain.Models.Products.ProductCategory", b =>
+                {
+                    b.HasOne("ERP_Service.Domain.Models.Stores.Store", "Store")
+                        .WithMany("ProductCategories")
+                        .HasForeignKey("StoreId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Store");
                 });
 
             modelBuilder.Entity("ERP_Service.Domain.Models.Products.ProductImage", b =>
@@ -874,6 +951,28 @@ namespace ERP_Service.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("ERP_Service.Domain.Models.Stores.Employee", b =>
+                {
+                    b.HasOne("ERP_Service.Domain.Models.Orders.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("ERP_Service.Domain.Models.Stores.Store", b =>
+                {
+                    b.HasOne("ERP_Service.Domain.Models.Stores.ShopOwner", "ShopOwner")
+                        .WithMany("Stores")
+                        .HasForeignKey("ShopOwnerId1")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ShopOwner");
                 });
 
             modelBuilder.Entity("ERP_Service.Domain.Models.UserLogin", b =>
@@ -943,9 +1042,16 @@ namespace ERP_Service.Infrastructure.Migrations
                     b.Navigation("UserLogins");
                 });
 
-            modelBuilder.Entity("ERP_Service.Domain.Models.UserLogin", b =>
+            modelBuilder.Entity("ERP_Service.Domain.Models.Stores.ShopOwner", b =>
                 {
-                    b.Navigation("Customers");
+                    b.Navigation("Stores");
+                });
+
+            modelBuilder.Entity("ERP_Service.Domain.Models.Stores.Store", b =>
+                {
+                    b.Navigation("ProductCategories");
+
+                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }
