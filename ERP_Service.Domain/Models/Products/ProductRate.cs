@@ -5,7 +5,6 @@ namespace ERP_Service.Domain.Models.Products;
 
 public partial class ProductRate : EntityBase<int>
 {
-
     public int ProductId { get; set; }
 
     public Guid CustomerId { get; set; }

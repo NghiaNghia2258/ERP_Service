@@ -16,7 +16,9 @@ public class ProductRepository : RepositoryBase<Product, int>, IProductRepositor
 
 	public async Task<int> Create(Product model)
 	{
-		int id = await CreateAsync(model); 
+		model.StoreId = _payloadToken.StoreId;
+		model.ProductVariants = new List<ProductVariant>();
+        int id = await CreateAsync(model); 
 		return id;
 	}
 
@@ -29,16 +31,20 @@ public class ProductRepository : RepositoryBase<Product, int>, IProductRepositor
 	public async Task<IEnumerable<Product>> GetAll(OptionFilterProduct option)
 	{
 		var query = _dbContext.Products
-			.Select(q => new Product
+			.Include(p => p.Category)
+			.Include(p => p.ProductRates)
+			.Include(p => p.ProductVariants)
+            .Select(q => new Product
 			{
 				Id = q.Id,
 				Name = q.Name,
-				Description = q.Description,
 				MainImageUrl = q.MainImageUrl,
 				TotalInventory = q.TotalInventory,
-				CategoryId = q.CategoryId,
 				CategoryName = q.Category.Name,
-
+				PropertyName1 = q.PropertyName1,
+				PropertyName2 = q.PropertyName2,
+				ProductRates = q.ProductRates,
+				ProductVariants = q.ProductVariants.Where(x => x.IsActivate).ToList()
 			});
 
 		TotalRecords.PRODUCT = await query.CountAsync();
@@ -52,34 +58,44 @@ public class ProductRepository : RepositoryBase<Product, int>, IProductRepositor
 	{
 		return await _dbContext.Products
 			.Include(x => x.ProductVariants)
-			.Include(x => x.ProductImages)
 			.Select(x => 
 				new Product()
 				{
-					Id = x.Id,
-					Name = x.Name,
-					NameEn = x.NameEn,
-					Description = x.Description,
-					MainImageUrl = x.MainImageUrl,
-					TotalInventory = x.TotalInventory,
-					CategoryId = x.CategoryId,
-					CategoryName = x.CategoryName,
-					Version = x.Version,
+                    Id = x.Id,
+                    Name = x.Name,
+                    NameEn = x.NameEn,
+                    Description = x.Description,
+                    MainImageUrl = x.MainImageUrl,
+                    TotalInventory = x.TotalInventory,
+                    CategoryId = x.CategoryId,
+                    CategoryName = x.CategoryName,
+                    BrandId = x.BrandId,
+                    BrandName = x.BrandName,
+                    IsPhysicalProduct = x.IsPhysicalProduct,
+                    Weight = x.Weight,
+                    UnitWeight = x.UnitWeight,
+                    PropertyName1 = x.PropertyName1,
+                    PropertyName2 = x.PropertyName2,
+                    Version = x.Version,
+					PropertyValue1 = x.PropertyValue1,
+					PropertyValue2 = x.PropertyValue2,
+					Specifications = x.Specifications,
+					StoreId = x.StoreId,
+					CreatedAt = x.CreatedAt,
+					CreatedBy = x.CreatedBy,
+					CreatedName = x.CreatedName,
 					ProductVariants = x.ProductVariants.Select(y => new ProductVariant()
 					{
 						Id = y.Id,
-						Color = y.Color,
-						Size = y.Size,
+						PropertyValue1 = y.PropertyValue1,
+						PropertyValue2 = y.PropertyValue2,
 						ImageUrl = y.ImageUrl,
 						Price = y.Price,
 						Inventory = y.Inventory,
 						Version = y.Version,
+						IsActivate = y.IsActivate,
 					}).ToList(),
-					ProductImages = x.ProductImages.Select(y => new ProductImage
-					{
-						Id = y.Id,
-						ImageUrl = y.ImageUrl
-					}).ToList()
+					ImageUrls = x.ImageUrls,
 				}
 			)
 			.FirstOrDefaultAsync(x => x.Id == id) ?? new Product();

@@ -18,12 +18,13 @@ public abstract class RepositoryBase<T,TKey>: IRepositoryBase<T,TKey> where T : 
 	private readonly IHttpContextAccessor _httpContextAccessor;
 	private readonly IConfiguration _config;
 	protected readonly AppDbContext _dbContext;
+    protected PayloadToken _payloadToken { get => JwtTokenHelper.GetPayloadToken(_httpContextAccessor.HttpContext, _config); }
 	protected RepositoryBase(AppDbContext dbContext, IHttpContextAccessor httpContextAccessor, IConfiguration config)
 	{
 		_dbContext = dbContext;
 		_httpContextAccessor = httpContextAccessor;
 		_config = config;
-	}
+    }
 	public async Task UpdateAsync(T update)
     {
         if (_dbContext.Entry(update).State == EntityState.Unchanged) return;
@@ -49,11 +50,9 @@ public abstract class RepositoryBase<T,TKey>: IRepositoryBase<T,TKey> where T : 
         
         if (update is IUpdateTracking trackingEntity)
         {
-            PayloadToken payloadToken = JwtTokenHelper.GetPayloadToken(_httpContextAccessor.HttpContext, _config);
-
 			trackingEntity.UpdatedAt = TimeConst.Now;
-            trackingEntity.UpdatedBy = payloadToken.Username;
-            trackingEntity.UpdatedName = payloadToken.FullName;
+            trackingEntity.UpdatedBy = _payloadToken.Username;
+            trackingEntity.UpdatedName = _payloadToken.FullName;
         }
 
         await _dbContext.SaveChangesAsync();
@@ -80,12 +79,10 @@ public abstract class RepositoryBase<T,TKey>: IRepositoryBase<T,TKey> where T : 
         if (exist == null) { throw new NotFoundDataException("Record for delete does not exist"); }
         if (exist is ISoftDelete softDelete)
         {
-			PayloadToken payloadToken = JwtTokenHelper.GetPayloadToken(_httpContextAccessor.HttpContext, _config);
-
 			softDelete.IsDeleted = true;
-            softDelete.DeletedBy = payloadToken.Username;
+            softDelete.DeletedBy = _payloadToken.Username;
             softDelete.DeletedAt = TimeConst.Now;
-            softDelete.DeletedName = payloadToken.FullName;
+            softDelete.DeletedName = _payloadToken.FullName;
         }
         else
         {

@@ -7,4 +7,7 @@ public class Employee: EntityBase<Guid>
     public string Code { get; set; }
     public string Name { get; set; }
     public string Phone { get; set; }
+    public int? UserLoginId { get; set; }
+
+    public UserLogin UserLogin { get; set; }
 }

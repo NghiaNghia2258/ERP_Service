@@ -2,4 +2,5 @@
 
 public class OptionFilterCustomer: PagingRequestParameters
 {
+    public string? KeyWord { get; set; }
 }

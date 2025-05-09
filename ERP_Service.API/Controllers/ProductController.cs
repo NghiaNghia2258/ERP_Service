@@ -1,28 +1,31 @@
-﻿using ERP_Service.Application.Comands.Customers;
-using ERP_Service.Application.Comands.Products;
-using ERP_Service.Application.Mapper.Model.Customers;
+﻿using ERP_Service.Application.Comands.Products;
 using ERP_Service.Application.Mapper.Model.Products;
-using ERP_Service.Application.Queries.Customers;
 using ERP_Service.Application.Queries.Products;
 using ERP_Service.Application.Services.Interfaces;
+using ERP_Service.Domain.ApiResult;
 using ERP_Service.Domain.Const;
 using ERP_Service.Domain.PagingRequest;
+using ERP_Service.Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ERP_Service.API.Controllers
 {
-	[Route("api/[controller]")]
+    [Route("api/[controller]")]
 	[ApiController]
 	public class ProductController : ControllerBase
 	{
 		private readonly IAuthoziService _authoziService;
 		private readonly IMediator _mediator;
+		private readonly AppDbContext _dbContext;
 
-		public ProductController(IAuthoziService authoziService, IMediator mediator)
+
+        public ProductController(IAuthoziService authoziService, IMediator mediator, AppDbContext dbContext)
 		{
 			_authoziService = authoziService;
 			_mediator = mediator;
+			_dbContext = dbContext;
 		}
 		[HttpGet("{id:int}")]
 		public async Task<IActionResult> GetById(int id)
@@ -72,5 +75,26 @@ namespace ERP_Service.API.Controllers
 			var result = await _mediator.Send(new GetProductVariantByProductIdQuery(productId));
 			return Ok(result);
 		}
-	}
+        [HttpGet("get-statistics/{productId:int}")]
+        public async Task<IActionResult> GetProductStatistics(int productId)
+        {
+			var statistics = await _dbContext.Products
+				.Include(x => x.ProductRates)
+				.Where(x => x.Id.Equals(productId))
+				.Select(x => new
+				{
+                    productId = x.Id,
+                    rateCount = x.ProductRates.Count,
+					sellCount = x.SellCount,
+                    ratingOneStar = x.ProductRates.Count(x => x.Rating.Equals(1)),
+                    ratingTwoStar = x.ProductRates.Count(x => x.Rating.Equals(2)),
+                    ratingThreeStar = x.ProductRates.Count(x => x.Rating.Equals(3)),
+                    ratingFourStar = x.ProductRates.Count(x => x.Rating.Equals(4)),
+                    ratingFiveStar = x.ProductRates.Count(x => x.Rating.Equals(5)),
+                })
+				.FirstOrDefaultAsync();
+            
+            return Ok(new ApiSuccessResult<object>(statistics));
+        }
+    }
 }

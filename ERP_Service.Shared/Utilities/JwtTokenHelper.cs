@@ -27,7 +27,10 @@ public static class JwtTokenHelper
 		var claims = new List<Claim>();
 		claims.Add(new Claim("UserLoginId", payloadToken.UserLoginId.ToString()));
 		claims.Add(new Claim("FullName", payloadToken.FullName ?? "No name"));
-		foreach (var item in payloadToken.Roles)
+		claims.Add(new Claim("CustomerId", payloadToken.CustomerId.ToString()));
+		claims.Add(new Claim("StoreId", payloadToken.StoreId.ToString()));
+		claims.Add(new Claim("EmployeeId", payloadToken.EmployeeId.ToString()));
+        foreach (var item in payloadToken.Roles)
 		{
 			if (!string.IsNullOrEmpty(item.Name))
 			{
@@ -47,7 +50,7 @@ public static class JwtTokenHelper
 		string bearerToken = httpContext.Request.Headers["Authorization"].FirstOrDefault() ?? string.Empty;
 		if (string.IsNullOrEmpty(bearerToken))
 		{
-			throw new Exception("Unauthorized (Not login)");
+			return new();
 		}
 		else
 		{
@@ -70,12 +73,21 @@ public static class JwtTokenHelper
 
 		var principal = tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
 		JwtSecurityToken jwtToken = (JwtSecurityToken)validatedToken;
+        var customerIdStr = jwtToken.Claims.FirstOrDefault(c => c.Type == "CustomerId")?.Value;
+        var storeIdStr = jwtToken.Claims.FirstOrDefault(c => c.Type == "StoreId")?.Value;
+        var employeeIdStr = jwtToken.Claims.FirstOrDefault(c => c.Type == "EmployeeId")?.Value;
 
-		PayloadToken payloadToken = new PayloadToken()
+        Guid.TryParse(customerIdStr, out Guid customerId);
+        Guid.TryParse(storeIdStr, out Guid storeId);
+        Guid.TryParse(employeeIdStr, out Guid employeeId);
+        PayloadToken payloadToken = new PayloadToken()
 		{
 			UserLoginId = int.Parse(jwtToken.Claims.FirstOrDefault(c => c.Type == "UserLoginId")?.Value ?? throw new Exception("UserLoginId claim not found")),
 			FullName = jwtToken.Claims.FirstOrDefault(c => c.Type == "FullName")?.Value ?? "No name",
-		};
+            CustomerId = customerId,
+            StoreId = storeId,
+            EmployeeId = employeeId,
+        };
 
 		return payloadToken;
 	}

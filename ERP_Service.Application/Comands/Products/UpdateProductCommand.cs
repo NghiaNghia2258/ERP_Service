@@ -3,7 +3,6 @@ using ERP_Service.Application.Mapper.Model.Products;
 using ERP_Service.Domain.Abstractions;
 using ERP_Service.Domain.ApiResult;
 using ERP_Service.Domain.Models.Products;
-using ERP_Service.Shared.Utilities;
 using MediatR;
 
 namespace ERP_Service.Application.Comands.Products;
@@ -31,42 +30,26 @@ public class UpdateProductCommandHandler : CommandHandlerBase, IRequestHandler<U
 		{
 			try
 			{
-				Product product = _mapper.Map<Product>(request.Model);
-				await _unitOfWork.Product.Update(product);
-				foreach (var image in request.Model.productImages)
-				{
-					if(!image.Id.HasValue)
-					{
-						var productImage = _mapper.Map<ProductImage>(image);
-						productImage.ProductId = product.Id;
-						await _unitOfWork.ProductImage.Create(productImage);
-					}
-					else if (image.IsDeleted ?? false)
-					{
-						UploadHelper uploadHelper = new UploadHelper();
-						uploadHelper.DeleteFile(image.ImageUrl ?? "");
-						await _unitOfWork.ProductImage.Delete(image.Id.Value);
-					}
-				}
+				Product getById = await _unitOfWork.Product.GetById(request.Model.Id);
+				if (getById is null) throw new Exception("Not found to update");
+                for (int i = 0; i < request.Model.ProductVariants.Count; i++)
+                {
+					request.Model.ProductVariants[i].CreatedAt = getById.CreatedAt;
+					request.Model.ProductVariants[i].CreatedBy = getById.CreatedBy;
+					request.Model.ProductVariants[i].CreatedName = getById.CreatedName;
+                }
+                Product product = _mapper.Map<Product>(request.Model);
+				product.StoreId = getById.StoreId;
+				product.SellCount = getById.SellCount;
+				product.CreatedAt = getById.CreatedAt;
+				product.CreatedBy = getById.CreatedBy;
+				product.CreatedName = getById.CreatedName;
+                product.ImageUrls = ERP_Service.Shared.Utilities.JsonHelper.ConvertToJsonString(request.Model.ExistingUrls);
 
-				foreach (var variant in request.Model.ProductVariants)
-				{
-					if (!variant.Id.HasValue)
-					{
-						var productVariant = _mapper.Map<ProductVariant>(variant);
-						productVariant.ProductId = product.Id;
-						await _unitOfWork.ProductVariant.Create(productVariant);
-					}
-					else if (variant.IsDeleted ?? false)
-					{
-						await _unitOfWork.ProductVariant.Delete(variant.Id.Value);
-					}
-					else if (variant.IsEdited ?? false)
-					{
-						await _unitOfWork.ProductVariant.Update(_mapper.Map<ProductVariant>(variant));
-					}
-				}
-				await transaction.CommitAsync();
+				await _unitOfWork.ProductVariant.DeleteVariantsByProductId(product.Id);
+                await _unitOfWork.Product.Update(product);
+
+                await transaction.CommitAsync();
 			}
 			catch (Exception ex)
 			{

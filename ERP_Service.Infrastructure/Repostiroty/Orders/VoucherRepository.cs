@@ -28,7 +28,8 @@ public class VoucherRepository : RepositoryBase<Voucher, Guid>, IVoucherReposito
 	}
 	public async Task<Voucher> GetById(Guid id)
 	{
-		return await _dbContext.Vouchers
-			.FirstOrDefaultAsync(x => x.Id == id) ?? new Voucher();
+		//return await _dbContext.Vouchers
+		//	.FirstOrDefaultAsync(x => x.Id == id) ?? new Voucher();
+		return new();
 	}
 }

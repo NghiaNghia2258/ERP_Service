@@ -36,7 +36,11 @@ public class IdentityServices : IAuthService, IAuthoziService
 		PayloadToken payloadToken = new PayloadToken();
 		payloadToken.Username = userlogin.Username;
 		payloadToken.UserLoginId = userlogin.Id;
-		List<RoleDto> roles = new List<RoleDto>();
+        payloadToken.CustomerId = userlogin.Customers.Any() ? userlogin.Customers.First().Id : new();
+        payloadToken.StoreId = userlogin.Stores.Any() ? userlogin.Stores.First().Id : new();
+        payloadToken.EmployeeId = userlogin.Employees.Any() ? userlogin.Employees.First().Id : new();
+
+        List<RoleDto> roles = new List<RoleDto>();
 		foreach(var item in userlogin.RoleGroup.Roles)
 		{
 			roles.Add(new RoleDto

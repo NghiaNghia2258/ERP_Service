@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ERP_Service.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241231045143_aa")]
-    partial class aa
+    [Migration("20250504144337_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -72,6 +72,9 @@ namespace ERP_Service.Infrastructure.Migrations
                     b.Property<int>("Point")
                         .HasColumnType("int");
 
+                    b.Property<Guid>("StoreId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int?>("UserLoginId")
                         .HasColumnType("int");
 
@@ -80,9 +83,30 @@ namespace ERP_Service.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("StoreId");
+
                     b.HasIndex("UserLoginId");
 
                     b.ToTable("Customers");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("22222222-2222-2222-2222-222222222222"),
+                            Code = "CUST001",
+                            CreatedAt = new DateTime(2025, 5, 4, 21, 43, 36, 268, DateTimeKind.Local).AddTicks(8744),
+                            CreatedBy = "admin",
+                            CreatedName = "Admin",
+                            Debt = 0.0,
+                            Gender = "Nam",
+                            IsDeleted = false,
+                            Name = "Nguyễn Văn A",
+                            Phone = "0909123456",
+                            Point = 120,
+                            StoreId = new Guid("bdbad2ae-0ffa-4420-acb9-275e5476013b"),
+                            UserLoginId = 2,
+                            Version = 0
+                        });
                 });
 
             modelBuilder.Entity("ERP_Service.Domain.Models.Orders.Order", b =>
@@ -178,7 +202,7 @@ namespace ERP_Service.Infrastructure.Migrations
 
                     b.HasIndex("VoucherId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Order");
                 });
 
             modelBuilder.Entity("ERP_Service.Domain.Models.Orders.OrderItem", b =>
@@ -252,7 +276,7 @@ namespace ERP_Service.Infrastructure.Migrations
 
                     b.HasIndex("ProductVariantId");
 
-                    b.ToTable("OrderItems");
+                    b.ToTable("OrderItem");
                 });
 
             modelBuilder.Entity("ERP_Service.Domain.Models.Orders.Voucher", b =>
@@ -332,7 +356,7 @@ namespace ERP_Service.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Vouchers");
+                    b.ToTable("Voucher");
                 });
 
             modelBuilder.Entity("ERP_Service.Domain.Models.Products.Product", b =>
@@ -343,7 +367,13 @@ namespace ERP_Service.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CategoryId")
+                    b.Property<int?>("BrandId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("BrandName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("CategoryId")
                         .HasColumnType("int");
 
                     b.Property<string>("CategoryName")
@@ -372,7 +402,13 @@ namespace ERP_Service.Infrastructure.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ImageUrls")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsPhysicalProduct")
                         .HasColumnType("bit");
 
                     b.Property<string>("MainImageUrl")
@@ -385,8 +421,32 @@ namespace ERP_Service.Infrastructure.Migrations
                     b.Property<string>("NameEn")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("PropertyName1")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PropertyName2")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PropertyValue1")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PropertyValue2")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SellCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Specifications")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("StoreId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<double?>("TotalInventory")
                         .HasColumnType("float");
+
+                    b.Property<string>("UnitWeight")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -400,11 +460,41 @@ namespace ERP_Service.Infrastructure.Migrations
                     b.Property<int>("Version")
                         .HasColumnType("int");
 
+                    b.Property<double?>("Weight")
+                        .HasColumnType("float");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("BrandId");
 
                     b.HasIndex("CategoryId");
 
+                    b.HasIndex("StoreId");
+
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("ERP_Service.Domain.Models.Products.ProductBrand", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("StoreId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ProductBrands");
                 });
 
             modelBuilder.Entity("ERP_Service.Domain.Models.Products.ProductCategory", b =>
@@ -419,6 +509,9 @@ namespace ERP_Service.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("StoreId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("Version")
                         .HasColumnType("int");
 
@@ -431,69 +524,51 @@ namespace ERP_Service.Infrastructure.Migrations
                         {
                             Id = 1,
                             Name = "Mùa đông",
+                            StoreId = new Guid("bdbad2ae-0ffa-4420-acb9-275e5476013b"),
                             Version = 0
                         },
                         new
                         {
                             Id = 3,
                             Name = "Mùa hè",
+                            StoreId = new Guid("bdbad2ae-0ffa-4420-acb9-275e5476013b"),
                             Version = 0
                         },
                         new
                         {
                             Id = 4,
                             Name = "Mùa xuân",
+                            StoreId = new Guid("bdbad2ae-0ffa-4420-acb9-275e5476013b"),
                             Version = 0
                         },
                         new
                         {
                             Id = 5,
                             Name = "Mùa thu",
+                            StoreId = new Guid("bdbad2ae-0ffa-4420-acb9-275e5476013b"),
                             Version = 0
                         },
                         new
                         {
                             Id = 6,
                             Name = "Thời trang nữ",
+                            StoreId = new Guid("bdbad2ae-0ffa-4420-acb9-275e5476013b"),
                             Version = 0
                         },
                         new
                         {
                             Id = 7,
                             Name = "Thời trang trẻ em",
+                            StoreId = new Guid("bdbad2ae-0ffa-4420-acb9-275e5476013b"),
                             Version = 0
                         },
                         new
                         {
                             Id = 8,
                             Name = "Thời trang nam",
+                            StoreId = new Guid("bdbad2ae-0ffa-4420-acb9-275e5476013b"),
                             Version = 0
                         });
-                });
-
-            modelBuilder.Entity("ERP_Service.Domain.Models.Products.ProductImage", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Version")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("ProductImages");
                 });
 
             modelBuilder.Entity("ERP_Service.Domain.Models.Products.ProductRate", b =>
@@ -536,10 +611,6 @@ namespace ERP_Service.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Color")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -566,6 +637,9 @@ namespace ERP_Service.Infrastructure.Migrations
                     b.Property<int>("Inventory")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsActivate")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -575,8 +649,10 @@ namespace ERP_Service.Infrastructure.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Size")
-                        .IsRequired()
+                    b.Property<string>("PropertyValue1")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PropertyValue2")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -674,6 +750,151 @@ namespace ERP_Service.Infrastructure.Migrations
                         {
                             Id = 2,
                             Name = "User",
+                            Version = 0
+                        });
+                });
+
+            modelBuilder.Entity("ERP_Service.Domain.Models.Stores.Employee", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("UserLoginId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserLoginId");
+
+                    b.ToTable("Employee");
+                });
+
+            modelBuilder.Entity("ERP_Service.Domain.Models.Stores.Store", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ContactEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ContactPhone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CoverImage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DeletedName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Facebook")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Followers")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Instagram")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("JoinDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Logo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Policies")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("Rating")
+                        .HasColumnType("float");
+
+                    b.Property<int>("ReviewCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Twitter")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("UserLoginId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Verified")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserLoginId");
+
+                    b.ToTable("Store");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("bdbad2ae-0ffa-4420-acb9-275e5476013b"),
+                            ContactEmail = "store@example.com",
+                            ContactPhone = "0909123456",
+                            CoverImage = "https://example.com/cover.jpg",
+                            Description = "Chuyên cung cấp quần áo nam nữ cao cấp, phong cách hiện đại.",
+                            Facebook = "https://facebook.com/store",
+                            Followers = 1200,
+                            Instagram = "https://instagram.com/store",
+                            IsDeleted = false,
+                            JoinDate = new DateTime(2024, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Location = "Hà Nội, Việt Nam",
+                            Logo = "https://example.com/logo.png",
+                            Name = "Cửa hàng Thời Trang Dao",
+                            Policies = "[{\"title\":\"Đổi trả trong 7 ngày\",\"description\":\"Hỗ trợ đổi trả trong 7 ngày nếu có lỗi sản phẩm.\"}]",
+                            Rating = 4.7999999999999998,
+                            ReviewCount = 135,
+                            Twitter = "https://twitter.com/store",
+                            UserLoginId = 1,
+                            Verified = true,
                             Version = 0
                         });
                 });
@@ -783,9 +1004,18 @@ namespace ERP_Service.Infrastructure.Migrations
 
             modelBuilder.Entity("ERP_Service.Domain.Models.Customer", b =>
                 {
+                    b.HasOne("ERP_Service.Domain.Models.Stores.Store", "Store")
+                        .WithMany()
+                        .HasForeignKey("StoreId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("ERP_Service.Domain.Models.UserLogin", "UserLogin")
                         .WithMany("Customers")
-                        .HasForeignKey("UserLoginId");
+                        .HasForeignKey("UserLoginId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Store");
 
                     b.Navigation("UserLogin");
                 });
@@ -794,11 +1024,13 @@ namespace ERP_Service.Infrastructure.Migrations
                 {
                     b.HasOne("ERP_Service.Domain.Models.Customer", "Customer")
                         .WithMany("Orders")
-                        .HasForeignKey("CustomerId");
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("ERP_Service.Domain.Models.Orders.Voucher", "Voucher")
                         .WithMany("Orders")
-                        .HasForeignKey("VoucherId");
+                        .HasForeignKey("VoucherId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Customer");
 
@@ -810,13 +1042,13 @@ namespace ERP_Service.Infrastructure.Migrations
                     b.HasOne("ERP_Service.Domain.Models.Orders.Order", "Order")
                         .WithMany("OrderItems")
                         .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("ERP_Service.Domain.Models.Products.ProductVariant", "ProductVariant")
                         .WithMany("OrderItems")
                         .HasForeignKey("ProductVariantId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Order");
@@ -826,24 +1058,27 @@ namespace ERP_Service.Infrastructure.Migrations
 
             modelBuilder.Entity("ERP_Service.Domain.Models.Products.Product", b =>
                 {
+                    b.HasOne("ERP_Service.Domain.Models.Products.ProductBrand", "Brand")
+                        .WithMany("Products")
+                        .HasForeignKey("BrandId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("ERP_Service.Domain.Models.Products.ProductCategory", "Category")
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("ERP_Service.Domain.Models.Stores.Store", "Store")
+                        .WithMany()
+                        .HasForeignKey("StoreId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Brand");
 
                     b.Navigation("Category");
-                });
 
-            modelBuilder.Entity("ERP_Service.Domain.Models.Products.ProductImage", b =>
-                {
-                    b.HasOne("ERP_Service.Domain.Models.Products.Product", "Product")
-                        .WithMany("ProductImages")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
+                    b.Navigation("Store");
                 });
 
             modelBuilder.Entity("ERP_Service.Domain.Models.Products.ProductRate", b =>
@@ -851,13 +1086,13 @@ namespace ERP_Service.Infrastructure.Migrations
                     b.HasOne("ERP_Service.Domain.Models.Customer", "Customer")
                         .WithMany("ProductRates")
                         .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("ERP_Service.Domain.Models.Products.Product", "Product")
                         .WithMany("ProductRates")
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Customer");
@@ -870,10 +1105,30 @@ namespace ERP_Service.Infrastructure.Migrations
                     b.HasOne("ERP_Service.Domain.Models.Products.Product", "Product")
                         .WithMany("ProductVariants")
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("ERP_Service.Domain.Models.Stores.Employee", b =>
+                {
+                    b.HasOne("ERP_Service.Domain.Models.UserLogin", "UserLogin")
+                        .WithMany("Employees")
+                        .HasForeignKey("UserLoginId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("UserLogin");
+                });
+
+            modelBuilder.Entity("ERP_Service.Domain.Models.Stores.Store", b =>
+                {
+                    b.HasOne("ERP_Service.Domain.Models.UserLogin", "UserLogin")
+                        .WithMany("Stores")
+                        .HasForeignKey("UserLoginId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("UserLogin");
                 });
 
             modelBuilder.Entity("ERP_Service.Domain.Models.UserLogin", b =>
@@ -881,7 +1136,7 @@ namespace ERP_Service.Infrastructure.Migrations
                     b.HasOne("ERP_Service.Domain.Models.RoleGroup", "RoleGroup")
                         .WithMany("UserLogins")
                         .HasForeignKey("RoleGroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("RoleGroup");
@@ -892,13 +1147,13 @@ namespace ERP_Service.Infrastructure.Migrations
                     b.HasOne("ERP_Service.Domain.Models.RoleGroup", null)
                         .WithMany()
                         .HasForeignKey("RoleGroupsId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("ERP_Service.Domain.Models.Role", null)
                         .WithMany()
                         .HasForeignKey("RolesId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -921,11 +1176,14 @@ namespace ERP_Service.Infrastructure.Migrations
 
             modelBuilder.Entity("ERP_Service.Domain.Models.Products.Product", b =>
                 {
-                    b.Navigation("ProductImages");
-
                     b.Navigation("ProductRates");
 
                     b.Navigation("ProductVariants");
+                });
+
+            modelBuilder.Entity("ERP_Service.Domain.Models.Products.ProductBrand", b =>
+                {
+                    b.Navigation("Products");
                 });
 
             modelBuilder.Entity("ERP_Service.Domain.Models.Products.ProductCategory", b =>
@@ -946,6 +1204,10 @@ namespace ERP_Service.Infrastructure.Migrations
             modelBuilder.Entity("ERP_Service.Domain.Models.UserLogin", b =>
                 {
                     b.Navigation("Customers");
+
+                    b.Navigation("Employees");
+
+                    b.Navigation("Stores");
                 });
 #pragma warning restore 612, 618
         }

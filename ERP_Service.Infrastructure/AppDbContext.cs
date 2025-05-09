@@ -31,19 +31,19 @@ public partial class AppDbContext : DbContext
 	public virtual DbSet<Product> Products { get; set; }
 	public virtual DbSet<ProductVariant> ProductVariants { get; set; }
 	public virtual DbSet<ProductCategory> ProductCategories { get; set; }
-	public virtual DbSet<ProductImage> ProductImages { get; set; }
-	public virtual DbSet<ProductRate> ProductRates { get; set; }
+	public virtual DbSet<ProductBrand> ProductBrands { get; set; }
+    public virtual DbSet<ProductRate> ProductRates { get; set; }
 
 	#endregion
 
 	#region DbSet module Order
-	public virtual DbSet<Order> Orders { get; set; }
-	public virtual DbSet<OrderItem> OrderItems { get; set; }
-	public virtual DbSet<Voucher> Vouchers { get; set; }
+	//public virtual DbSet<Order> Orders { get; set; }
+	//public virtual DbSet<OrderItem> OrderItems { get; set; }
+	//public virtual DbSet<Voucher> Vouchers { get; set; }
 	#endregion
 
 	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-		=> optionsBuilder.UseSqlServer("Data Source=.\\SQLEXPRESS;Initial Catalog=AppDb;Integrated Security=True;Trust Server Certificate=True");
+		=> optionsBuilder.UseSqlServer("Data Source=.\\SQLEXPRESS;Initial Catalog=AppDb2;Integrated Security=True;Trust Server Certificate=True");
 
 
 
@@ -81,8 +81,14 @@ public partial class AppDbContext : DbContext
 
 			entity.HasOne(d => d.RoleGroup).WithMany(p => p.UserLogins).HasForeignKey(d => d.RoleGroupId);
 		});
-
-		var softDeleteEntities = typeof(ISoftDelete).Assembly.GetTypes()
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            foreach (var foreignKey in entityType.GetForeignKeys())
+            {
+                foreignKey.DeleteBehavior = DeleteBehavior.Restrict;
+            }
+        }
+        var softDeleteEntities = typeof(ISoftDelete).Assembly.GetTypes()
 		.Where(type => typeof(ISoftDelete).IsAssignableFrom(type)
 			&& type.IsClass
 			&& !type.IsAbstract);

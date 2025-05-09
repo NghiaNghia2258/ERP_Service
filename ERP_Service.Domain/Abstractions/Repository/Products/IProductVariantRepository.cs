@@ -7,7 +7,8 @@ public interface IProductVariantRepository
 {
 	Task<bool> Create(ProductVariant model);
 	Task<bool> Delete(int id);
-	Task<ProductVariant> GetById(int id);
+    Task DeleteVariantsByProductId(int productId);
+    Task<ProductVariant> GetById(int id);
 	Task<ProductVariant> GetByIdWithProduct(int id);
 	Task<IEnumerable<ProductVariant>> GetProductVariantsByProductId(int productId);
 	Task<bool> Update(ProductVariant model);

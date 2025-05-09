@@ -2,7 +2,7 @@
 
 namespace ERP_Service.Domain.Models.Products;
 
-public partial class ProductCategory : EntityBase<int>
+public class ProductBrand : EntityBase<int>
 {
     public Guid StoreId { get; set; } = new Guid();
     public string Name { get; set; } = null!;

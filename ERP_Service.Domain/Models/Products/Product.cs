@@ -1,21 +1,32 @@
 ﻿using ERP_Service.Domain.Abstractions;
 using ERP_Service.Domain.Abstractions.Model;
 using ERP_Service.Domain.Exceptions.Products;
+using ERP_Service.Domain.Models.Stores;
 
 namespace ERP_Service.Domain.Models.Products;
 
 public partial class Product : EntityBase<int>, IAuditableEntity
 {
+    public Guid StoreId { get; set; } = new Guid();
     public string Name { get; set; } = null!;
-
     public string? NameEn { get; set; }
-
     public string? Description { get; set; }
-
     public string? MainImageUrl { get; set; }
+    public string? ImageUrls { get; set; }
     public double? TotalInventory { get; set; } = 0;
-    public int CategoryId { get; set; }
+    public int? CategoryId { get; set; }
     public string? CategoryName { get; set; }
+    public int? BrandId { get; set; }
+    public int SellCount { get; set; } = 0;
+    public string? BrandName { get; set; }
+    public bool? IsPhysicalProduct { get; set; }
+    public double? Weight { get; set; }
+    public string? UnitWeight { get; set; }
+    public string? PropertyName1 { get; set; }
+    public string? PropertyName2 { get; set; }
+    public string? PropertyValue1 { get; set; }
+    public string? PropertyValue2 { get; set; }
+    public string? Specifications { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 	public string CreatedBy { get; set; } = null!;
     public string CreatedName { get; set; } = null!;
@@ -39,8 +50,8 @@ public partial class Product : EntityBase<int>, IAuditableEntity
 	}
 
 	public virtual ProductCategory Category { get; set; } = null!;
-    public virtual ICollection<ProductImage> ProductImages { get; set; } = new List<ProductImage>();
-
+	public virtual ProductBrand Brand { get; set; } = null!;
+    public virtual Store Store { get; set; } = null!;
     public virtual ICollection<ProductRate> ProductRates { get; set; } = new List<ProductRate>();
     public virtual ICollection<ProductVariant> ProductVariants { get; set; } = new List<ProductVariant>();
 

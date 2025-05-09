@@ -28,7 +28,8 @@ public class OrderItemRepository : RepositoryBase<OrderItem, int>, IOrderItemRep
 	}
 	public async Task<OrderItem> GetById(int id)
 	{
-		return await _dbContext.OrderItems
-			.FirstOrDefaultAsync(x => x.Id == id) ?? new OrderItem();
+		//return await _dbContext.OrderItems
+		//	.FirstOrDefaultAsync(x => x.Id == id) ?? new OrderItem();
+		return new();
 	}
 }

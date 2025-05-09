@@ -2,12 +2,23 @@
 
 public class GetAllProductDto
 {
-	public int Id { get; set; }
-	public string Name { get; set; } = null!;
-	public string? Description { get; set; }
-	public string? MainImageUrl { get; set; }
-	public double? TotalInventory { get; set; } = 0;
-	public int CategoryId { get; set; }
-	public string? CategoryName { get; set; }
+    public string Id { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string MainImageUrl { get; set; } = string.Empty;
+    public double TotalInventory { get; set; }
+    public string CategoryName { get; set; } = string.Empty;
+    public double Rate { get; set; }
+    public double RateCount { get; set; }
+    public string PropertyName1 { get; set; } = string.Empty;
+    public string PropertyName2 { get; set; } = string.Empty;
 
+    public List<ResponseGetAllProductVariant> ProductVariants { get; set; } = new();
+
+}
+public class ResponseGetAllProductVariant
+{
+    public string PropertyValue1 { get; set; } = string.Empty;
+    public string PropertyValue2 { get; set; } = string.Empty;
+    public string ImageUrl { get; set; } = string.Empty;
+    public int Inventory { get; set; }
 }

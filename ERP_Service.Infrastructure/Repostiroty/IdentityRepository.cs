@@ -30,6 +30,9 @@ namespace ERP_Service.DAL.Repostiroty
 		public async Task<UserLogin> SignIn(ParamasSignInRequest model)
 		{
 			UserLogin? UserLogin = await _dbContext.UserLogins
+				.Include(x => x.Customers)
+				.Include(x => x.Stores)
+				.Include(x => x.Employees)
 				.Include(x => x.RoleGroup)
 				.ThenInclude(x => x.Roles)
 				.Where(x => x.Username == model.Username && x.Password == model.Password)
@@ -38,7 +41,10 @@ namespace ERP_Service.DAL.Repostiroty
 					Id = x.Id,
 					Username = x.Username,
 					RoleGroupId = x.RoleGroupId,
-					RoleGroup = x.RoleGroup
+					RoleGroup = x.RoleGroup,
+					Customers = x.Customers,
+					Stores = x.Stores,
+					Employees = x.Employees,
 				}).FirstOrDefaultAsync();
 				;
 			return UserLogin ?? new UserLogin();

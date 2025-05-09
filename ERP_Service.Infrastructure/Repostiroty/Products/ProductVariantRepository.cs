@@ -47,4 +47,16 @@ public class ProductVariantRepository : RepositoryBase<ProductVariant, int>, IPr
 			.Where(x => x.ProductId == productId)
 			.ToListAsync();
 	}
+	public async Task DeleteVariantsByProductId(int productId)
+	{
+        var variants = await _dbContext.ProductVariants
+        .Where(x => x.ProductId == productId)
+        .ToListAsync();
+
+        if (variants.Any())
+        {
+            _dbContext.ProductVariants.RemoveRange(variants);
+            await _dbContext.SaveChangesAsync();
+        }
+    }
 }

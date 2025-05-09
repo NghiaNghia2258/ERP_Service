@@ -14,7 +14,6 @@ public interface IUnitOfWork: IDisposable
 	public IProductRepository Product { get; }
 	public IProductVariantRepository ProductVariant { get; }
 	public IProductCategoryRepository ProductCategory { get; }
-	public IProductImageRepository ProductImage { get; }
 	public IProductRateRepository ProductRate { get; }
 	#endregion
 	#region Repository module Orders

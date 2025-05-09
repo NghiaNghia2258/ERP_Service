@@ -7,15 +7,13 @@ namespace ERP_Service.Domain.Models.Products;
 
 public partial class ProductVariant : EntityBase<int>, IAuditableEntity
 {
-    public string Size { get; set; } = null!;
-
-    public string Color { get; set; } = null!;
-
+    public string? PropertyValue1 { get; set; }
+    public string? PropertyValue2 { get; set; }
     public double Price { get; set; }
     public string? ImageUrl { get; set; }
-
     public int Inventory { get; set; } = 0;
     public int ProductId { get; set; }
+    public bool IsActivate { get; set; }
     public DateTime CreatedAt { get; set; }
     public string CreatedBy { get; set; } = null!;
     public string CreatedName { get; set; } = null!;
