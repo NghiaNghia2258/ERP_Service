@@ -3,6 +3,7 @@ using ERP_Service.Application.Mapper.Model.Customers;
 using ERP_Service.Application.Queries.Customers;
 using ERP_Service.Application.Services.Interfaces;
 using ERP_Service.Domain.Const;
+using ERP_Service.Domain.Models;
 using ERP_Service.Domain.PagingRequest;
 using ERP_Service.Infrastructure;
 using ERP_Service.Shared.Models;
@@ -60,25 +61,70 @@ namespace ERP_Service.API.Controllers
 				}).Skip(begin).Take(take).ToListAsync();
 			return Ok(result);
 		}
-        [HttpGet("getDashboardStats")]
-        public async Task<IActionResult> getDashboardStats()
+        [HttpGet("getCustomerStats")]
+        public async Task<IActionResult> GetCustomerStats()
         {
             PayloadToken token = _authoziService.PayloadToken;
 
-			var query = _dbContext.Customers.Where(x => x.StoreId.Equals(token.StoreId));
+            Guid id = token.CustomerId;
+            var customer = await _dbContext.Customers.FindAsync(id);
+            if (customer == null) return NotFound();
 
-            var result = new
-			{
-				TotalCustomers = await query.CountAsync(),
-				ActiveCustomers = await query.CountAsync(x => x.IsActive ?? false),
-				InActiveCustomers = await query.CountAsync(x => !x.IsActive ?? true),
+            var orders = _dbContext.Orders
+                .Where(o => o.CustomerId == id);
 
-            };
-            return Ok(result);
+            var totalOrders = await orders.CountAsync();
+            var totalSpent = await orders.SumAsync(o => (double?)o.TotalPrice) ?? 0;
+            var canceledOrders = await orders.CountAsync(o => o.PaymentStatus == 0); 
+            var lastOrderDate = await orders
+                .OrderByDescending(o => o.CreatedAt)
+                .Select(o => (DateTime?)o.CreatedAt)
+                .FirstOrDefaultAsync();
+
+            // Tính sản phẩm mua nhiều nhất
+            var topProduct = await _dbContext.OrderItems
+             .Where(d => d.Order.CustomerId == id)
+             .GroupBy(d => d.ProductVariantId)
+             .Select(g => new {
+                 ProductVariantId = g.Key,
+                 TimesPurchased = g.Sum(x => x.Quantity)
+             })
+             .OrderByDescending(g => g.TimesPurchased)
+             .Join(_dbContext.ProductVariants,
+                   g => g.ProductVariantId,
+                   v => v.Id,
+                   (g, v) => new {
+                       v.ProductId,
+                       g.TimesPurchased
+                   })
+             .Join(_dbContext.Products,
+                   gv => gv.ProductId,
+                   p => p.Id,
+                   (gv, p) => new {
+                       Name = p.Name,
+                       TimesPurchased = gv.TimesPurchased
+                   })
+             .FirstOrDefaultAsync();
+
+            var totalReviews = await _dbContext.ProductRates
+                .CountAsync(r => r.CustomerId == id && !string.IsNullOrEmpty(r.Review));
+
+            return Ok(new
+            {
+                totalOrders,
+                totalSpent,
+                cancelRate = totalOrders == 0 ? 0 : Math.Round((double)canceledOrders / totalOrders, 4),
+                lastOrderDate,
+                topProduct = topProduct ?? new { Name = "", TimesPurchased = 0 },
+                joinedAt = customer.CreatedAt,
+                isVerified = customer.IsActive ?? false,
+                totalReviews,
+            });
         }
-		
-		  [HttpGet("getDashboardStats")]
-        public async Task<IActionResult> getDashboardStats()
+
+
+        [HttpGet("getCustomerStatsById/{id}")]
+        public async Task<IActionResult> getCustomerStatsById(Guid id)
         {
             PayloadToken token = _authoziService.PayloadToken;
 
@@ -96,12 +142,13 @@ namespace ERP_Service.API.Controllers
 		
 
         [HttpPost]
-		public async Task<IActionResult> Create([FromBody] CreateCustomerDto model)
+		public async Task<IActionResult> Create([FromBody] Customer model)
 		{
 			await _authoziService.IsAuthozi(role: RoleNameConst.CREATE_CUSTOMER);
 
-			var result = await _mediator.Send(new CreateCustomerCommand(model));
-			return Ok(result);
+            _dbContext.Customers.Add(model);
+            await _dbContext.SaveChangesAsync();
+			return Ok("");
 		}
         [HttpPost("review")]
         public async Task<IActionResult> Review([FromBody] ReviewDto model)

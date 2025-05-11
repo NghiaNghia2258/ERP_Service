@@ -37,9 +37,9 @@ public partial class AppDbContext : DbContext
 	#endregion
 
 	#region DbSet module Order
-	//public virtual DbSet<Order> Orders { get; set; }
-	//public virtual DbSet<OrderItem> OrderItems { get; set; }
-	//public virtual DbSet<Voucher> Vouchers { get; set; }
+	public virtual DbSet<Order> Orders { get; set; }
+	public virtual DbSet<OrderItem> OrderItems { get; set; }
+	public virtual DbSet<Voucher> Vouchers { get; set; }
 	#endregion
 
 	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
