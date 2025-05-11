@@ -1,6 +1,7 @@
 ﻿using ERP_Service.DAL.Data;
 using ERP_Service.Domain.Abstractions.Model;
 using ERP_Service.Domain.Models;
+using ERP_Service.Domain.Models.InboundReceipts;
 using ERP_Service.Domain.Models.Orders;
 using ERP_Service.Domain.Models.Products;
 using Microsoft.EntityFrameworkCore;
@@ -40,9 +41,14 @@ public partial class AppDbContext : DbContext
 	public virtual DbSet<Order> Orders { get; set; }
 	public virtual DbSet<OrderItem> OrderItems { get; set; }
 	public virtual DbSet<Voucher> Vouchers { get; set; }
-	#endregion
+    #endregion
 
-	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    #region DbSet module InboundReceipt
+    public virtual DbSet<InboundReceipt> InboundReceipts { get; set; }
+    public virtual DbSet<InboundReceiptItem> InboundReceiptItems { get; set; }
+    #endregion
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		=> optionsBuilder.UseSqlServer("Data Source=.\\SQLEXPRESS;Initial Catalog=AppDb2;Integrated Security=True;Trust Server Certificate=True");
 
 

@@ -47,8 +47,7 @@ namespace ERP_Service.API.Controllers
 			int take = option.PageSize;
 
 
-            var result = await _dbContext.Customers.Where(x => x.StoreId.Equals(token.StoreId)
-				&& string.IsNullOrEmpty(option.KeyWord) || x.Name.Contains(option.KeyWord ?? "")
+            var result = await _dbContext.Customers.Where(x => string.IsNullOrEmpty(option.KeyWord) || x.Name.Contains(option.KeyWord ?? "")
 			)
 				.Select(x => new
 				{
