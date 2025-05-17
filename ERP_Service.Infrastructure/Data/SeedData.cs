@@ -114,7 +114,7 @@ public static class SeedData
                 Point = 120,
                 Debt = 0,
                 UserLoginId = 2, // user1
-		        CreatedAt = DateTime.Now,
+		        CreatedAt = new DateTime(2025,5,15),
                 CreatedBy = "admin",
                 CreatedName = "Admin",
                 IsDeleted = false,
