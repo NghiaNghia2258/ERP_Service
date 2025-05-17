@@ -41,6 +41,11 @@ public partial class AppDbContext : DbContext
 	public virtual DbSet<Order> Orders { get; set; }
 	public virtual DbSet<OrderItem> OrderItems { get; set; }
 	public virtual DbSet<Voucher> Vouchers { get; set; }
+	public virtual DbSet<BundleDiscount> BundleDiscounts { get; set; }
+	public virtual DbSet<BundleDiscountItem> BundleDiscountItem { get; set; }
+	public virtual DbSet<VolumeDiscount> VolumeDiscount { get; set; }
+	public virtual DbSet<VolumeDiscountItem> VolumeDiscountItems { get; set; }
+
     #endregion
 
     #region DbSet module InboundReceipt
