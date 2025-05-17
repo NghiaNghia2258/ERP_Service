@@ -2,7 +2,6 @@
 using ERP_Service.Application.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using StackExchange.Redis;
 using System.Reflection;
 
 
@@ -22,7 +21,8 @@ public static class DependencyInjection
 		builder.Services.AddScoped<IAuthService, IdentityServices>();
 		builder.Services.AddScoped<IAuthoziService, IdentityServices>();
 		builder.Services.AddScoped<ICacheService, MemoryCacheService>();
-		//builder.Services.AddScoped<ICacheService, RedisCacheService>();
-		builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+		builder.Services.AddSingleton<IEventBufferService, FileEventBufferService>();
+        //builder.Services.AddScoped<ICacheService, RedisCacheService>();
+        builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 	}
 }

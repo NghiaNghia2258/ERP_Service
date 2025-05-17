@@ -10,23 +10,14 @@ using ERP_Service.Shared.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 namespace ERP_Service.API.Controllers
 {
     [Route("api/[controller]")]
 	[ApiController]
-	public class CustomerController : ControllerBase
+	public class CustomerController(IEventBufferService _eventBufferService, IAuthoziService _authoziService, IMediator _mediator, AppDbContext _dbContext) : ControllerBase
 	{
-		private readonly IAuthoziService _authoziService;
-		private readonly IMediator _mediator;
-        private readonly AppDbContext _dbContext;
-
-        public CustomerController(IAuthoziService authoziService, IMediator mediator, AppDbContext dbContext)
-        {
-            _authoziService = authoziService;
-            _mediator = mediator;
-            _dbContext = dbContext;
-        }
         [HttpGet("{id:guid}")]
 		public async Task<IActionResult> GetById(Guid id)
 		{
@@ -193,5 +184,43 @@ namespace ERP_Service.API.Controllers
 			var result = await _mediator.Send(new DeleteCustomerCommand(id));
 			return Ok(result);
 		}
-	}
+
+        [HttpPost("add-to-cart")]
+        public async Task<IActionResult> AddToCart(AddToCartDto dto)
+        {
+            PayloadToken token = _authoziService.PayloadToken;
+
+            //Xử lý logic thêm vào giỏ hàng
+            var userEvent = new UserEvent
+            {
+                UserId = token.CustomerId,
+                ProductId = dto.ProductId,
+                EventTime = DateTime.UtcNow,
+                Weight = EventWeights.AddToCart
+            };
+            var eventJson = JsonSerializer.Serialize(userEvent);
+
+            await _eventBufferService.AppendEventAsync(eventJson);
+            return Ok();
+        }
+        [HttpPost("remove-from-cart")]
+        public async Task<IActionResult> RemoveFromCart(AddToCartDto dto)
+        {
+            PayloadToken token = _authoziService.PayloadToken;
+            //Xử lý logic thêm vào giỏ hàng
+
+            var userEvent = new UserEvent
+            {
+                UserId = token.CustomerId,
+                ProductId = dto.ProductId,
+                EventTime = DateTime.UtcNow,
+                Weight = EventWeights.RemoveFromCart
+            };
+            var eventJson = JsonSerializer.Serialize(userEvent);
+
+            await _eventBufferService.AppendEventAsync(eventJson);
+            return Ok();
+        }
+
+    }
 }
