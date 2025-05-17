@@ -2,6 +2,7 @@
 using ERP_Service.Shared.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Text.Json;
 
 namespace ERP_Service.API.Controllers
@@ -25,10 +26,10 @@ namespace ERP_Service.API.Controllers
             {
                 id = p.Id,
                 name = p.Name,
-                images = JsonSerializer.Deserialize<List<string>>(p.ImageUrls),
+                images = JsonConvert.DeserializeObject<List<string>>(p.ImageUrls),
                 price = p.ProductVariants.OrderBy(v => v.Price).FirstOrDefault()!.Price,
-                rating = p.ProductRates.Count > 0 ? p.ProductRates.Average(r => r.Rating) : 0,
-                reviewCount = p.ProductRates.Count,
+                rating = p.Rate,
+                reviewCount = p.RateCount,
                 inStock = p.TotalInventory > 0,
                 isNew = p.CreatedAt >= DateTime.Now.AddDays(-30),
                 isBestSeller = p.SellCount >= 1000,
@@ -37,6 +38,8 @@ namespace ERP_Service.API.Controllers
                 shortDescription = p.Description
             })
             .ToListAsync();
+
+            return Ok(new );
         }
     }
 }

@@ -14,4 +14,8 @@
     <ProjectReference Include="..\ERP_Service.Shared\ERP_Service.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\Customers\" />
+  </ItemGroup>
+
 </Project>

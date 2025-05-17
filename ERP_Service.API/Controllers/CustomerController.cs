@@ -204,7 +204,7 @@ namespace ERP_Service.API.Controllers
             return Ok();
         }
         [HttpPost("remove-from-cart")]
-        public async Task<IActionResult> RemoveFromCart(AddToCartDto dto)
+        public async Task<IActionResult> RemoveFromCart(int productId)
         {
             PayloadToken token = _authoziService.PayloadToken;
             //Xử lý logic thêm vào giỏ hàng
@@ -212,7 +212,7 @@ namespace ERP_Service.API.Controllers
             var userEvent = new UserEvent
             {
                 UserId = token.CustomerId,
-                ProductId = dto.ProductId,
+                ProductId = productId,
                 EventTime = DateTime.UtcNow,
                 Weight = EventWeights.RemoveFromCart
             };

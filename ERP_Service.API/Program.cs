@@ -1,5 +1,6 @@
 using ERP_Service.API.Extensions;
 using ERP_Service.Application;
+using ERP_Service.Application.Services;
 using ERP_Service.Infrastructure;
 using Fashion.API.Extensions;
 using Serilog;
@@ -15,7 +16,7 @@ try
 	builder.Services.AddConfigurationSettings(builder.Configuration);
 	builder.Services.AddInfrastructure(builder.Configuration);
 
-	var app = builder.Build();
+    var app = builder.Build();
 	app.UseCors("CorsPolicy");
 	app.UseInfrastructure();
 
