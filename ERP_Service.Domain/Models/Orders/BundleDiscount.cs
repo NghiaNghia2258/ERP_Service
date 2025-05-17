@@ -12,5 +12,5 @@ public class BundleDiscount
     public int? MaxUsageCount { get; set; }
     public int UsageCount { get; set; }
     public bool IsActive { get; set; }
-    public virtual ICollection<ProductVariant> ProductVariants { get; set; }
+    public virtual ICollection<BundleDiscountItem> BundleDiscountItems { get; set; }
 }
