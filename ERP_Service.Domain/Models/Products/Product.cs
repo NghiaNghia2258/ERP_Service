@@ -27,6 +27,8 @@ public partial class Product : EntityBase<int>, IAuditableEntity
     public string? PropertyValue1 { get; set; }
     public string? PropertyValue2 { get; set; }
     public string? Specifications { get; set; }
+    public double? OriginalPrice { get; set; }
+    public double? Price { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 	public string CreatedBy { get; set; } = null!;
     public string CreatedName { get; set; } = null!;
