@@ -4,6 +4,7 @@ using ERP_Service.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ERP_Service.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250517165907_init124")]
+    partial class init124
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -274,32 +277,6 @@ namespace ERP_Service.Infrastructure.Migrations
                     b.ToTable("BundleDiscountItem");
                 });
 
-            modelBuilder.Entity("ERP_Service.Domain.Models.Orders.ExcludeVolumeDiscountItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ProductVariantId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Version")
-                        .HasColumnType("int");
-
-                    b.Property<int>("VolumeDiscountId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductVariantId");
-
-                    b.HasIndex("VolumeDiscountId");
-
-                    b.ToTable("ExcludeVolumeDiscountItems");
-                });
-
             modelBuilder.Entity("ERP_Service.Domain.Models.Orders.Order", b =>
                 {
                     b.Property<Guid>("Id")
@@ -483,9 +460,6 @@ namespace ERP_Service.Infrastructure.Migrations
 
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<bool?>("IsApplyForAll")
-                        .HasColumnType("bit");
 
                     b.Property<bool>("IsPercentage")
                         .HasColumnType("bit");
@@ -1315,25 +1289,6 @@ namespace ERP_Service.Infrastructure.Migrations
                     b.Navigation("ProductVariant");
                 });
 
-            modelBuilder.Entity("ERP_Service.Domain.Models.Orders.ExcludeVolumeDiscountItem", b =>
-                {
-                    b.HasOne("ERP_Service.Domain.Models.Products.ProductVariant", "ProductVariant")
-                        .WithMany()
-                        .HasForeignKey("ProductVariantId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("ERP_Service.Domain.Models.Orders.VolumeDiscount", "VolumeDiscount")
-                        .WithMany("ExcludeVolumeDiscountItems")
-                        .HasForeignKey("VolumeDiscountId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("ProductVariant");
-
-                    b.Navigation("VolumeDiscount");
-                });
-
             modelBuilder.Entity("ERP_Service.Domain.Models.Orders.Order", b =>
                 {
                     b.HasOne("ERP_Service.Domain.Models.Customer", "Customer")
@@ -1514,8 +1469,6 @@ namespace ERP_Service.Infrastructure.Migrations
 
             modelBuilder.Entity("ERP_Service.Domain.Models.Orders.VolumeDiscount", b =>
                 {
-                    b.Navigation("ExcludeVolumeDiscountItems");
-
                     b.Navigation("VolumeDiscountItems");
                 });
 

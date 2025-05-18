@@ -45,6 +45,7 @@ public partial class AppDbContext : DbContext
 	public virtual DbSet<BundleDiscountItem> BundleDiscountItem { get; set; }
 	public virtual DbSet<VolumeDiscount> VolumeDiscounts { get; set; }
 	public virtual DbSet<VolumeDiscountItem> VolumeDiscountItems { get; set; }
+	public virtual DbSet<ExcludeVolumeDiscountItem> ExcludeVolumeDiscountItems { get; set; }
 
     #endregion
 

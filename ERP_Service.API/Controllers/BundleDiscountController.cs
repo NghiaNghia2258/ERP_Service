@@ -1,4 +1,5 @@
-﻿using ERP_Service.Domain.ApiResult;
+﻿using ERP_Service.Application.Mapper.Model.Orders.Bundles;
+using ERP_Service.Domain.ApiResult;
 using ERP_Service.Domain.Models.Orders;
 using ERP_Service.Infrastructure;
 using Microsoft.AspNetCore.Http;
@@ -12,8 +13,25 @@ namespace ERP_Service.API.Controllers
     public class BundleDiscountController(AppDbContext _dbContext) : ControllerBase
     {
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] BundleDiscount bundle)
+        public async Task<IActionResult> Create([FromBody] CreateBundleDto dto)
         {
+
+            var bundle = new BundleDiscount
+            {
+                Name = dto.Name,
+                Description = dto.Description,
+                DiscountValue = dto.DiscountValue,
+                IsPercentage = dto.IsPercentage,
+                IsActive = dto.IsActive,
+                MaxUsageCount = dto.MaxUsageCount,
+                StartDate = dto.StartDate,
+                EndDate = dto.EndDate,
+                BundleDiscountItems = dto.ProductVariantIds.Select(productVariantId => new BundleDiscountItem
+                {
+                    ProductVariantId = productVariantId
+                }).ToList(),
+            };
+
             _dbContext.BundleDiscounts.Add(bundle);
             await _dbContext.SaveChangesAsync();
 

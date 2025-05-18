@@ -1,4 +1,5 @@
-﻿using ERP_Service.Domain.ApiResult;
+﻿using ERP_Service.Application.Mapper.Model.Orders.Volumes;
+using ERP_Service.Domain.ApiResult;
 using ERP_Service.Domain.Models.Orders;
 using ERP_Service.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
@@ -11,8 +12,25 @@ namespace ERP_Service.API.Controllers
     public class VolumeDiscountController(AppDbContext _dbContext) : ControllerBase
     {
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] VolumeDiscount discount)
+        public async Task<IActionResult> Create([FromBody] CreateVolumeDto dto)
         {
+            var discount = new VolumeDiscount();
+
+            discount.IsApplyForAll = dto.IsApplyForAll;
+            discount.DiscountValue = dto.DiscountValue;
+            discount.IsPercentage = dto.IsPercentage;
+            discount.StartDate = dto.StartDate;
+            discount.MinQuantity = dto.MinQuantity;
+            discount.EndDate = dto.EndDate;
+            discount.VolumeDiscountItems = dto.ProductVariantIds?.Select(productVariantId => new VolumeDiscountItem
+            {
+                ProductVariantId = productVariantId
+            }).ToList();
+            discount.ExcludeVolumeDiscountItems = dto.ProductVariantIds?.Select(productVariantId => new ExcludeVolumeDiscountItem
+            {
+                ProductVariantId = productVariantId
+            }).ToList();
+            
             _dbContext.VolumeDiscounts.Add(discount);
             await _dbContext.SaveChangesAsync();
 

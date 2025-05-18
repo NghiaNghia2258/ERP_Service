@@ -1,16 +1,14 @@
-﻿namespace ERP_Service.Domain.Models.Orders;
+﻿namespace ERP_Service.Application.Mapper.Model.Orders.Bundles;
 
-public class BundleDiscount
+public class CreateBundleDto
 {
-    public int Id { get; set; }
     public string Name { get; set; }
     public string Description { get; set; }
     public double DiscountValue { get; set; }
     public bool IsPercentage { get; set; }
     public int? MaxUsageCount { get; set; }
-    public int UsageCount { get; set; }
     public bool IsActive { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime? EndDate { get; set; }
-    public virtual ICollection<BundleDiscountItem> BundleDiscountItems { get; set; }
+    public IEnumerable<int> ProductVariantIds { get; set; }
 }
