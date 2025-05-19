@@ -30,4 +30,9 @@
     <ProjectReference Include="..\ERP_Service.Shared\ERP_Service.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Logs\" />
+    <Folder Include="Logs\EventBuffers\" />
+  </ItemGroup>
+
 </Project>

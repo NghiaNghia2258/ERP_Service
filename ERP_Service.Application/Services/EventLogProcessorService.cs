@@ -1,27 +1,31 @@
-﻿using ERP_Service.Domain.Models;
+﻿using ERP_Service.Domain.Abstractions.Repository;
+using ERP_Service.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Text.Json;
 
 namespace ERP_Service.Application.Services;
 
 
-public class EventLogProcessorService : BackgroundService
+public class EventLogProcessorService(
+    IServiceProvider _serviceProvider
+    ) : BackgroundService
 {
-    private readonly TimeSpan _interval = TimeSpan.FromHours(1);
+    private readonly TimeSpan _interval = TimeSpan.FromSeconds(5);
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            ProcessEventLogs();
+            await ProcessEventLogs();
 
             await Task.Delay(_interval, stoppingToken);
         }
     }
 
-    private void ProcessEventLogs()
+    private async Task ProcessEventLogs()
     {
-        string logFolder = Path.Combine(AppContext.BaseDirectory, "Logs", "EventBuffers");
+        string logFolder = Path.Combine(Directory.GetCurrentDirectory(), "Logs", "EventBuffers");
         string todayLogFile = Path.Combine(logFolder, $"events_buffer_{DateTime.UtcNow:yyyyMMdd}.log");
 
         if (!File.Exists(todayLogFile))
@@ -49,14 +53,13 @@ public class EventLogProcessorService : BackgroundService
 
         if (events.Count > 0)
         {
-            SaveEventsToDatabase(events);
+            using var scope = _serviceProvider.CreateScope();
+
+            var userEventRepository = scope.ServiceProvider.GetRequiredService<IUserEventRepository>();
+            await userEventRepository.AddRange(events);
+            await userEventRepository.UpdateUserProductScoresAsync();
         }
 
         File.Delete(todayLogFile);
-    }
-
-    private void SaveEventsToDatabase(List<UserEvent> events)
-    {
-        // TODO: Viết logic lưu dữ liệu vào DB có sẵn của bạn
     }
 }

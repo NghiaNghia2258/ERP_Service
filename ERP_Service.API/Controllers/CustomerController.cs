@@ -2,8 +2,10 @@
 using ERP_Service.Application.Mapper.Model.Customers;
 using ERP_Service.Application.Queries.Customers;
 using ERP_Service.Application.Services.Interfaces;
+using ERP_Service.Domain.ApiResult;
 using ERP_Service.Domain.Const;
 using ERP_Service.Domain.Models;
+using ERP_Service.Domain.Models.Orders;
 using ERP_Service.Domain.PagingRequest;
 using ERP_Service.Infrastructure;
 using ERP_Service.Shared.Models;
@@ -191,35 +193,79 @@ namespace ERP_Service.API.Controllers
             PayloadToken token = _authoziService.PayloadToken;
 
             //Xử lý logic thêm vào giỏ hàng
+            var order = await _dbContext.Orders.Include(x => x.OrderItems).FirstOrDefaultAsync(x => x.PaymentStatus == StatusOrder.Pending && x.CustomerId == token.CustomerId);
+            var orderCount = await _dbContext.Orders.CountAsync();
+            if(order is null)
+            {
+                order = new Domain.Models.Orders.Order()
+                {
+                    Id = Guid.NewGuid(),
+                    Code = $"HD{orderCount.ToString().PadLeft(8, '0')}",
+                    CustomerId = token.CustomerId,
+                    CreatedBy = token.CustomerId.ToString(),
+                    CreatedName = token.Username
+                };
+                await _dbContext.Orders.AddAsync(order);
+            }
+            var orderItem = order.OrderItems.FirstOrDefault(x => x.ProductVariantId == dto.ProductId);
+            if(orderItem is null)
+            {
+                orderItem = new OrderItem
+                {
+                    OrderId = order.Id,
+                    ProductVariantId = dto.ProductId,
+                    Quantity = dto.Quantity,
+                    ImageUrl = dto.ImgUrl,
+                    UnitPrice = dto.Price
+                };
+                await _dbContext.OrderItems.AddAsync(orderItem);
+            }
+            else
+            {
+                orderItem.Quantity += dto.Quantity;
+            }
+           
+            await _dbContext.SaveChangesAsync();
+
             var userEvent = new UserEvent
             {
+                Id = Guid.NewGuid(),
                 UserId = token.CustomerId,
                 ProductId = dto.ProductId,
                 EventTime = DateTime.UtcNow,
-                Weight = EventWeights.AddToCart
+                Weight = EventWeights.AddToCart.Weight,
+                EventName = EventWeights.AddToCart.Name
             };
             var eventJson = JsonSerializer.Serialize(userEvent);
 
             await _eventBufferService.AppendEventAsync(eventJson);
-            return Ok();
+            return Ok(new ApiSuccessResult<bool>(true));
         }
         [HttpPost("remove-from-cart")]
         public async Task<IActionResult> RemoveFromCart(int productId)
         {
             PayloadToken token = _authoziService.PayloadToken;
             //Xử lý logic thêm vào giỏ hàng
+            var order = await _dbContext.Orders.Include(x => x.OrderItems).FirstOrDefaultAsync(x => x.PaymentStatus == StatusOrder.Pending && x.CustomerId == token.CustomerId);
+            if (order is null) { throw new Exception("Không có order hợp lệ"); }
+            var orderItem = order.OrderItems.FirstOrDefault(x => x.ProductVariantId == productId);
+            if (orderItem is null) { throw new Exception("Không có orderItem hợp lệ"); }
+            _dbContext.OrderItems.Remove(orderItem);
+            await _dbContext.SaveChangesAsync();
 
             var userEvent = new UserEvent
             {
+                Id = Guid.NewGuid(),
                 UserId = token.CustomerId,
                 ProductId = productId,
                 EventTime = DateTime.UtcNow,
-                Weight = EventWeights.RemoveFromCart
+                Weight = EventWeights.RemoveFromCart.Weight,
+                EventName = EventWeights.RemoveFromCart.Name
             };
             var eventJson = JsonSerializer.Serialize(userEvent);
 
             await _eventBufferService.AppendEventAsync(eventJson);
-            return Ok();
+            return Ok(new ApiSuccessResult<bool>(true));
         }
 
     }

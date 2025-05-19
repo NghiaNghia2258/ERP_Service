@@ -1,4 +1,6 @@
-﻿using ERP_Service.Infrastructure;
+﻿using ERP_Service.Application.Services.Interfaces;
+using ERP_Service.Infrastructure;
+using ERP_Service.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -7,7 +9,7 @@ namespace ERP_Service.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class HomeController(AppDbContext _dbContext) : ControllerBase
+public class HomeController(AppDbContext _dbContext, IAuthoziService _authoziService) : ControllerBase
 {
     [HttpGet("get-best-seller")]
     public async Task<IActionResult> GetBestSeller()
@@ -38,5 +40,17 @@ public class HomeController(AppDbContext _dbContext) : ControllerBase
         .ToListAsync();
 
         return Ok("");
+    }
+    public async Task<List<int>> GetRecommendedProductIds()
+    {
+        PayloadToken token = _authoziService.PayloadToken;
+        var productIds = 
+
+        return await _dbContext.UserProductScores
+            .Where(x => x.UserId == userId)
+            .OrderByDescending(x => x.Score)
+            .Select(x => x.ProductId)
+            .Take(top)
+            .ToListAsync();
     }
 }

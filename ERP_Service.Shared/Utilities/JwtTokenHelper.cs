@@ -26,7 +26,8 @@ public static class JwtTokenHelper
 
 		var claims = new List<Claim>();
 		claims.Add(new Claim("UserLoginId", payloadToken.UserLoginId.ToString()));
-		claims.Add(new Claim("FullName", payloadToken.FullName ?? "No name"));
+		claims.Add(new Claim("Username", payloadToken.Username));
+        claims.Add(new Claim("FullName", payloadToken.FullName ?? "No name"));
 		claims.Add(new Claim("CustomerId", payloadToken.CustomerId.ToString()));
 		claims.Add(new Claim("StoreId", payloadToken.StoreId.ToString()));
 		claims.Add(new Claim("EmployeeId", payloadToken.EmployeeId.ToString()));
@@ -84,6 +85,7 @@ public static class JwtTokenHelper
 		{
 			UserLoginId = int.Parse(jwtToken.Claims.FirstOrDefault(c => c.Type == "UserLoginId")?.Value ?? throw new Exception("UserLoginId claim not found")),
 			FullName = jwtToken.Claims.FirstOrDefault(c => c.Type == "FullName")?.Value ?? "No name",
+            Username = jwtToken.Claims.FirstOrDefault(c => c.Type == "Username")?.Value ?? "No name",
             CustomerId = customerId,
             StoreId = storeId,
             EmployeeId = employeeId,

@@ -53,6 +53,8 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<InboundReceipt> InboundReceipts { get; set; }
     public virtual DbSet<InboundReceiptItem> InboundReceiptItems { get; set; }
     #endregion
+    public virtual DbSet<UserEvent> UserEvents { get; set; }
+    public virtual DbSet<UserProductScore> UserProductScores { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		=> optionsBuilder.UseSqlServer("Data Source=.\\SQLEXPRESS;Initial Catalog=AppDb2;Integrated Security=True;Trust Server Certificate=True");

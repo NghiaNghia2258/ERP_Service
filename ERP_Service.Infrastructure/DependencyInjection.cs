@@ -1,6 +1,8 @@
 ﻿using ERP_Service.DAL.Repostiroty;
 using ERP_Service.Domain.Abstractions;
+using ERP_Service.Domain.Abstractions.Repository;
 using ERP_Service.Domain.Abstractions.Repository.Identity;
+using ERP_Service.Infrastructure.Repostiroty;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +24,7 @@ public static class DependencyInjection
 		builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 		builder.Services.AddScoped<IAuthenRepository, IdentityRepository>();
 		builder.Services.AddScoped<IAuthoziRepository, IdentityRepository>();
+		builder.Services.AddScoped<IUserEventRepository, UserEventRepository>();
 	}
 
 }
