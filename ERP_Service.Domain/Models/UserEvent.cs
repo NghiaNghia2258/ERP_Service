@@ -8,5 +8,6 @@ public class UserEvent : EntityBase<Guid>
     public string EventName { get; set; }
     public DateTime EventTime { get; set; } = DateTime.UtcNow;
     public int ProductId { get; set; }
+    public int ProductVariantId { get; set; }
     public int Weight { get; set; }
 }

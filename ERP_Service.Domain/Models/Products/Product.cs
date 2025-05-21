@@ -56,5 +56,6 @@ public partial class Product : EntityBase<int>, IAuditableEntity
     public virtual Store Store { get; set; } = null!;
     public virtual ICollection<ProductRate> ProductRates { get; set; } = new List<ProductRate>();
     public virtual ICollection<ProductVariant> ProductVariants { get; set; } = new List<ProductVariant>();
+    public virtual ICollection<ProductWish> ProductWishs { get; set; } = new List<ProductWish>();
 
 }

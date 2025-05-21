@@ -32,4 +32,5 @@ public class Customer : EntityBase<Guid>, ICreateTracking, ISoftDelete
     public virtual Store Store { get; set; } = null!;
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 	public virtual ICollection<ProductRate> ProductRates { get; set; } = new List<ProductRate>();
+	public virtual ICollection<ProductWish> ProductWishs { get; set; } = new List<ProductWish>();
 }

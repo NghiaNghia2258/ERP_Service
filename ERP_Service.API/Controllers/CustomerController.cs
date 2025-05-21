@@ -113,7 +113,45 @@ namespace ERP_Service.API.Controllers
                 totalReviews,
             });
         }
+        [HttpGet("addOrRemoveWishList")]
+        public async Task<IActionResult> AddOrRemoveWishList(int productId, bool isAdd)
+        {
+            PayloadToken token = _authoziService.PayloadToken;
 
+            var productWish = await _dbContext.ProductWishs.FirstOrDefaultAsync(x => x.ProductId == productId);
+            if(productWish is null && isAdd)
+            {
+                _dbContext.ProductWishs.Add(new Domain.Models.Products.ProductWish
+                {
+                    ProductId = productId,   
+                    CustomerId = token.CustomerId
+                });
+            }
+            else if (productWish is not null && !isAdd)
+            {
+                _dbContext.ProductWishs.Remove(productWish);
+            }
+            else
+            {
+                return Ok(new ApiErrorResult());
+            }
+
+            var userEvent = new UserEvent
+            {
+                Id = Guid.NewGuid(),
+                UserId = token.CustomerId,
+                ProductId = productId,
+                EventTime = DateTime.UtcNow,
+                Weight = isAdd ? EventWeights.AddToWishlist.Weight : EventWeights.RemoveFromWishlist.Weight,
+                EventName = isAdd ? EventWeights.AddToWishlist.Name : EventWeights.RemoveFromWishlist.Name,
+            };
+            var eventJson = JsonSerializer.Serialize(userEvent);
+
+            await _eventBufferService.AppendEventAsync(eventJson);
+
+            await _dbContext.SaveChangesAsync();
+            return Ok(new ApiSuccessResult<bool>(true));
+        }
 
         [HttpGet("getCustomerStatsById/{id}")]
         public async Task<IActionResult> getCustomerStatsById(Guid id)
@@ -227,11 +265,12 @@ namespace ERP_Service.API.Controllers
            
             await _dbContext.SaveChangesAsync();
 
+            var productId = (await _dbContext.ProductVariants.FirstOrDefaultAsync(x => x.Id == dto.ProductId))?.ProductId;
             var userEvent = new UserEvent
             {
                 Id = Guid.NewGuid(),
                 UserId = token.CustomerId,
-                ProductId = dto.ProductId,
+                ProductId = productId ?? -1,
                 EventTime = DateTime.UtcNow,
                 Weight = EventWeights.AddToCart.Weight,
                 EventName = EventWeights.AddToCart.Name
@@ -242,22 +281,23 @@ namespace ERP_Service.API.Controllers
             return Ok(new ApiSuccessResult<bool>(true));
         }
         [HttpPost("remove-from-cart")]
-        public async Task<IActionResult> RemoveFromCart(int productId)
+        public async Task<IActionResult> RemoveFromCart(int productVariantId)
         {
             PayloadToken token = _authoziService.PayloadToken;
-            //Xử lý logic thêm vào giỏ hàng
             var order = await _dbContext.Orders.Include(x => x.OrderItems).FirstOrDefaultAsync(x => x.PaymentStatus == StatusOrder.Pending && x.CustomerId == token.CustomerId);
             if (order is null) { throw new Exception("Không có order hợp lệ"); }
-            var orderItem = order.OrderItems.FirstOrDefault(x => x.ProductVariantId == productId);
+            var orderItem = order.OrderItems.FirstOrDefault(x => x.ProductVariantId == productVariantId);
             if (orderItem is null) { throw new Exception("Không có orderItem hợp lệ"); }
             _dbContext.OrderItems.Remove(orderItem);
             await _dbContext.SaveChangesAsync();
+
+            var productId = (await _dbContext.ProductVariants.FirstOrDefaultAsync(x => x.Id == productVariantId))?.ProductId;
 
             var userEvent = new UserEvent
             {
                 Id = Guid.NewGuid(),
                 UserId = token.CustomerId,
-                ProductId = productId,
+                ProductId = productId ?? -1,
                 EventTime = DateTime.UtcNow,
                 Weight = EventWeights.RemoveFromCart.Weight,
                 EventName = EventWeights.RemoveFromCart.Name

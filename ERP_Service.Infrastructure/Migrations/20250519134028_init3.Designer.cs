@@ -4,6 +4,7 @@ using ERP_Service.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ERP_Service.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250519134028_init3")]
+    partial class init3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -108,74 +111,6 @@ namespace ERP_Service.Infrastructure.Migrations
                             Point = 120,
                             StoreId = new Guid("bdbad2ae-0ffa-4420-acb9-275e5476013b"),
                             UserLoginId = 2,
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = new Guid("33333333-3333-3333-3333-333333333333"),
-                            Code = "CUST002",
-                            CreatedAt = new DateTime(2025, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedBy = "admin",
-                            CreatedName = "Admin",
-                            Debt = 0.0,
-                            Gender = "Nữ",
-                            IsDeleted = false,
-                            Name = "Trần Thị B",
-                            Phone = "0909234567",
-                            Point = 100,
-                            StoreId = new Guid("bdbad2ae-0ffa-4420-acb9-275e5476013b"),
-                            UserLoginId = 3,
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = new Guid("44444444-4444-4444-4444-444444444444"),
-                            Code = "CUST003",
-                            CreatedAt = new DateTime(2025, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedBy = "admin",
-                            CreatedName = "Admin",
-                            Debt = 0.0,
-                            Gender = "Nam",
-                            IsDeleted = false,
-                            Name = "Lê Văn C",
-                            Phone = "0909345678",
-                            Point = 80,
-                            StoreId = new Guid("bdbad2ae-0ffa-4420-acb9-275e5476013b"),
-                            UserLoginId = 4,
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = new Guid("55555555-5555-5555-5555-555555555555"),
-                            Code = "CUST004",
-                            CreatedAt = new DateTime(2025, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedBy = "admin",
-                            CreatedName = "Admin",
-                            Debt = 0.0,
-                            Gender = "Nữ",
-                            IsDeleted = false,
-                            Name = "Phạm Thị D",
-                            Phone = "0909456789",
-                            Point = 90,
-                            StoreId = new Guid("bdbad2ae-0ffa-4420-acb9-275e5476013b"),
-                            UserLoginId = 5,
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = new Guid("66666666-6666-6666-6666-666666666666"),
-                            Code = "CUST005",
-                            CreatedAt = new DateTime(2025, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedBy = "admin",
-                            CreatedName = "Admin",
-                            Debt = 0.0,
-                            Gender = "Nam",
-                            IsDeleted = false,
-                            Name = "Đặng Văn E",
-                            Phone = "0909567890",
-                            Point = 70,
-                            StoreId = new Guid("bdbad2ae-0ffa-4420-acb9-275e5476013b"),
-                            UserLoginId = 6,
                             Version = 0
                         });
                 });
@@ -762,113 +697,6 @@ namespace ERP_Service.Infrastructure.Migrations
                     b.HasIndex("StoreId");
 
                     b.ToTable("Products");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 2,
-                            CategoryId = 1,
-                            CreatedAt = new DateTime(2025, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedBy = "admin",
-                            CreatedName = "admin",
-                            ImageUrls = "[\"https://placehold.co/100x100\",\"https://placehold.co/100x100\"]",
-                            IsDeleted = false,
-                            Name = "Test",
-                            OriginalPrice = 100.0,
-                            Price = 85.0,
-                            PropertyName1 = "Màu sắc",
-                            PropertyName2 = "Dung lượng",
-                            PropertyValue1 = "Đen,Trắng",
-                            PropertyValue2 = "128GB",
-                            SellCount = 0,
-                            StoreId = new Guid("bdbad2ae-0ffa-4420-acb9-275e5476013b"),
-                            TotalInventory = 0.0,
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CategoryId = 1,
-                            CreatedAt = new DateTime(2025, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedBy = "admin",
-                            CreatedName = "admin",
-                            ImageUrls = "[\"https://placehold.co/100x100\"]",
-                            IsDeleted = false,
-                            Name = "Test - Đen 128GB",
-                            OriginalPrice = 100.0,
-                            Price = 85.0,
-                            PropertyName1 = "Màu sắc",
-                            PropertyName2 = "Dung lượng",
-                            PropertyValue1 = "Đen",
-                            PropertyValue2 = "128GB",
-                            SellCount = 0,
-                            StoreId = new Guid("bdbad2ae-0ffa-4420-acb9-275e5476013b"),
-                            TotalInventory = 0.0,
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CategoryId = 1,
-                            CreatedAt = new DateTime(2025, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedBy = "admin",
-                            CreatedName = "admin",
-                            ImageUrls = "[\"https://placehold.co/100x100\"]",
-                            IsDeleted = false,
-                            Name = "Test - Trắng 128GB",
-                            OriginalPrice = 100.0,
-                            Price = 85.0,
-                            PropertyName1 = "Màu sắc",
-                            PropertyName2 = "Dung lượng",
-                            PropertyValue1 = "Trắng",
-                            PropertyValue2 = "128GB",
-                            SellCount = 0,
-                            StoreId = new Guid("bdbad2ae-0ffa-4420-acb9-275e5476013b"),
-                            TotalInventory = 0.0,
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = 5,
-                            CategoryId = 1,
-                            CreatedAt = new DateTime(2025, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedBy = "admin",
-                            CreatedName = "admin",
-                            ImageUrls = "[\"https://placehold.co/100x100\"]",
-                            IsDeleted = false,
-                            Name = "Test - Đen 256GB",
-                            OriginalPrice = 120.0,
-                            Price = 100.0,
-                            PropertyName1 = "Màu sắc",
-                            PropertyName2 = "Dung lượng",
-                            PropertyValue1 = "Đen",
-                            PropertyValue2 = "256GB",
-                            SellCount = 0,
-                            StoreId = new Guid("bdbad2ae-0ffa-4420-acb9-275e5476013b"),
-                            TotalInventory = 0.0,
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = 6,
-                            CategoryId = 1,
-                            CreatedAt = new DateTime(2025, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedBy = "admin",
-                            CreatedName = "admin",
-                            ImageUrls = "[\"https://placehold.co/100x100\"]",
-                            IsDeleted = false,
-                            Name = "Test - Trắng 256GB",
-                            OriginalPrice = 120.0,
-                            Price = 100.0,
-                            PropertyName1 = "Màu sắc",
-                            PropertyName2 = "Dung lượng",
-                            PropertyValue1 = "Trắng",
-                            PropertyValue2 = "256GB",
-                            SellCount = 0,
-                            StoreId = new Guid("bdbad2ae-0ffa-4420-acb9-275e5476013b"),
-                            TotalInventory = 0.0,
-                            Version = 0
-                        });
                 });
 
             modelBuilder.Entity("ERP_Service.Domain.Models.Products.ProductBrand", b =>
@@ -1069,130 +897,6 @@ namespace ERP_Service.Infrastructure.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("ProductVariants");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 5,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedBy = "admin",
-                            CreatedName = "admin",
-                            ImageUrl = "https://placehold.co/100x100",
-                            Inventory = 10,
-                            IsActivate = true,
-                            IsDeleted = false,
-                            Price = 85.0,
-                            ProductId = 2,
-                            PropertyValue1 = "Đen",
-                            PropertyValue2 = "128GB",
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = 6,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedBy = "admin",
-                            CreatedName = "admin",
-                            ImageUrl = "https://placehold.co/100x100",
-                            Inventory = 10,
-                            IsActivate = true,
-                            IsDeleted = false,
-                            Price = 85.0,
-                            ProductId = 2,
-                            PropertyValue1 = "Trắng",
-                            PropertyValue2 = "128GB",
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = 10,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedBy = "admin",
-                            CreatedName = "admin",
-                            ImageUrl = "https://placehold.co/100x100",
-                            Inventory = 10,
-                            IsActivate = true,
-                            IsDeleted = false,
-                            Price = 85.0,
-                            ProductId = 3,
-                            PropertyValue1 = "Đen",
-                            PropertyValue2 = "128GB",
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = 7,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedBy = "admin",
-                            CreatedName = "admin",
-                            ImageUrl = "https://placehold.co/100x100",
-                            Inventory = 10,
-                            IsActivate = true,
-                            IsDeleted = false,
-                            Price = 85.0,
-                            ProductId = 4,
-                            PropertyValue1 = "Trắng",
-                            PropertyValue2 = "128GB",
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = 8,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedBy = "admin",
-                            CreatedName = "admin",
-                            ImageUrl = "https://placehold.co/100x100",
-                            Inventory = 10,
-                            IsActivate = true,
-                            IsDeleted = false,
-                            Price = 100.0,
-                            ProductId = 5,
-                            PropertyValue1 = "Đen",
-                            PropertyValue2 = "256GB",
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = 9,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedBy = "admin",
-                            CreatedName = "admin",
-                            ImageUrl = "https://placehold.co/100x100",
-                            Inventory = 10,
-                            IsActivate = true,
-                            IsDeleted = false,
-                            Price = 100.0,
-                            ProductId = 6,
-                            PropertyValue1 = "Trắng",
-                            PropertyValue2 = "256GB",
-                            Version = 0
-                        });
-                });
-
-            modelBuilder.Entity("ERP_Service.Domain.Models.Products.ProductWish", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<Guid>("CustomerId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Version")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CustomerId");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("ProductWishs");
                 });
 
             modelBuilder.Entity("ERP_Service.Domain.Models.Role", b =>
@@ -1271,12 +975,6 @@ namespace ERP_Service.Infrastructure.Migrations
                         {
                             Id = 2,
                             Name = "User",
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "OwnerStore",
                             Version = 0
                         });
                 });
@@ -1553,15 +1251,6 @@ namespace ERP_Service.Infrastructure.Migrations
                             RoleGroupId = 2,
                             Username = "user5",
                             Version = 0
-                        },
-                        new
-                        {
-                            Id = 7,
-                            IsDeleted = false,
-                            Password = "store123",
-                            RoleGroupId = 3,
-                            Username = "store1",
-                            Version = 0
                         });
                 });
 
@@ -1625,26 +1314,6 @@ namespace ERP_Service.Infrastructure.Migrations
                         new
                         {
                             RoleGroupsId = 2,
-                            RolesId = 8
-                        },
-                        new
-                        {
-                            RoleGroupsId = 3,
-                            RolesId = 5
-                        },
-                        new
-                        {
-                            RoleGroupsId = 3,
-                            RolesId = 6
-                        },
-                        new
-                        {
-                            RoleGroupsId = 3,
-                            RolesId = 7
-                        },
-                        new
-                        {
-                            RoleGroupsId = 3,
                             RolesId = 8
                         });
                 });
@@ -1834,25 +1503,6 @@ namespace ERP_Service.Infrastructure.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("ERP_Service.Domain.Models.Products.ProductWish", b =>
-                {
-                    b.HasOne("ERP_Service.Domain.Models.Customer", "Customers")
-                        .WithMany("ProductWishs")
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("ERP_Service.Domain.Models.Products.Product", "Product")
-                        .WithMany("ProductWishs")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Customers");
-
-                    b.Navigation("Product");
-                });
-
             modelBuilder.Entity("ERP_Service.Domain.Models.Stores.Employee", b =>
                 {
                     b.HasOne("ERP_Service.Domain.Models.UserLogin", "UserLogin")
@@ -1904,8 +1554,6 @@ namespace ERP_Service.Infrastructure.Migrations
                     b.Navigation("Orders");
 
                     b.Navigation("ProductRates");
-
-                    b.Navigation("ProductWishs");
                 });
 
             modelBuilder.Entity("ERP_Service.Domain.Models.InboundReceipts.InboundReceipt", b =>
@@ -1940,8 +1588,6 @@ namespace ERP_Service.Infrastructure.Migrations
                     b.Navigation("ProductRates");
 
                     b.Navigation("ProductVariants");
-
-                    b.Navigation("ProductWishs");
                 });
 
             modelBuilder.Entity("ERP_Service.Domain.Models.Products.ProductBrand", b =>

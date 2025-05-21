@@ -4,6 +4,7 @@ using ERP_Service.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ERP_Service.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250520230311_init7")]
+    partial class init7
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1272,12 +1275,6 @@ namespace ERP_Service.Infrastructure.Migrations
                             Id = 2,
                             Name = "User",
                             Version = 0
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "OwnerStore",
-                            Version = 0
                         });
                 });
 
@@ -1553,15 +1550,6 @@ namespace ERP_Service.Infrastructure.Migrations
                             RoleGroupId = 2,
                             Username = "user5",
                             Version = 0
-                        },
-                        new
-                        {
-                            Id = 7,
-                            IsDeleted = false,
-                            Password = "store123",
-                            RoleGroupId = 3,
-                            Username = "store1",
-                            Version = 0
                         });
                 });
 
@@ -1625,26 +1613,6 @@ namespace ERP_Service.Infrastructure.Migrations
                         new
                         {
                             RoleGroupsId = 2,
-                            RolesId = 8
-                        },
-                        new
-                        {
-                            RoleGroupsId = 3,
-                            RolesId = 5
-                        },
-                        new
-                        {
-                            RoleGroupsId = 3,
-                            RolesId = 6
-                        },
-                        new
-                        {
-                            RoleGroupsId = 3,
-                            RolesId = 7
-                        },
-                        new
-                        {
-                            RoleGroupsId = 3,
                             RolesId = 8
                         });
                 });

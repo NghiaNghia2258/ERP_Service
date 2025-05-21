@@ -4,6 +4,7 @@ using ERP_Service.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ERP_Service.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250519144110_init6")]
+    partial class init6
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1169,32 +1172,6 @@ namespace ERP_Service.Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("ERP_Service.Domain.Models.Products.ProductWish", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<Guid>("CustomerId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Version")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CustomerId");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("ProductWishs");
-                });
-
             modelBuilder.Entity("ERP_Service.Domain.Models.Role", b =>
                 {
                     b.Property<int>("Id")
@@ -1271,12 +1248,6 @@ namespace ERP_Service.Infrastructure.Migrations
                         {
                             Id = 2,
                             Name = "User",
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "OwnerStore",
                             Version = 0
                         });
                 });
@@ -1553,15 +1524,6 @@ namespace ERP_Service.Infrastructure.Migrations
                             RoleGroupId = 2,
                             Username = "user5",
                             Version = 0
-                        },
-                        new
-                        {
-                            Id = 7,
-                            IsDeleted = false,
-                            Password = "store123",
-                            RoleGroupId = 3,
-                            Username = "store1",
-                            Version = 0
                         });
                 });
 
@@ -1625,26 +1587,6 @@ namespace ERP_Service.Infrastructure.Migrations
                         new
                         {
                             RoleGroupsId = 2,
-                            RolesId = 8
-                        },
-                        new
-                        {
-                            RoleGroupsId = 3,
-                            RolesId = 5
-                        },
-                        new
-                        {
-                            RoleGroupsId = 3,
-                            RolesId = 6
-                        },
-                        new
-                        {
-                            RoleGroupsId = 3,
-                            RolesId = 7
-                        },
-                        new
-                        {
-                            RoleGroupsId = 3,
                             RolesId = 8
                         });
                 });
@@ -1834,25 +1776,6 @@ namespace ERP_Service.Infrastructure.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("ERP_Service.Domain.Models.Products.ProductWish", b =>
-                {
-                    b.HasOne("ERP_Service.Domain.Models.Customer", "Customers")
-                        .WithMany("ProductWishs")
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("ERP_Service.Domain.Models.Products.Product", "Product")
-                        .WithMany("ProductWishs")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Customers");
-
-                    b.Navigation("Product");
-                });
-
             modelBuilder.Entity("ERP_Service.Domain.Models.Stores.Employee", b =>
                 {
                     b.HasOne("ERP_Service.Domain.Models.UserLogin", "UserLogin")
@@ -1904,8 +1827,6 @@ namespace ERP_Service.Infrastructure.Migrations
                     b.Navigation("Orders");
 
                     b.Navigation("ProductRates");
-
-                    b.Navigation("ProductWishs");
                 });
 
             modelBuilder.Entity("ERP_Service.Domain.Models.InboundReceipts.InboundReceipt", b =>
@@ -1940,8 +1861,6 @@ namespace ERP_Service.Infrastructure.Migrations
                     b.Navigation("ProductRates");
 
                     b.Navigation("ProductVariants");
-
-                    b.Navigation("ProductWishs");
                 });
 
             modelBuilder.Entity("ERP_Service.Domain.Models.Products.ProductBrand", b =>

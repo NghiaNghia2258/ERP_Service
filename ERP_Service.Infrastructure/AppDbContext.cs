@@ -27,6 +27,7 @@ public partial class AppDbContext : DbContext
 
 	public virtual DbSet<UserLogin> UserLogins { get; set; }
 	public virtual DbSet<Customer> Customers { get; set; }
+	public virtual DbSet<ProductWish> ProductWishs { get; set; }
 
 	#region DbSet module Product
 	public virtual DbSet<Product> Products { get; set; }

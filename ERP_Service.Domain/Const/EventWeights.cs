@@ -8,5 +8,6 @@ public static class EventWeights
     public static readonly EventInfo ProductView = new("ProductView", 1);
     public static readonly EventInfo Search = new("Search", 1);
     public static readonly EventInfo AddToWishlist = new("AddToWishlist", 2);
+    public static readonly EventInfo RemoveFromWishlist = new("RemoveFromWishlist", -2);
 }
 public record EventInfo(string Name, int Weight);
