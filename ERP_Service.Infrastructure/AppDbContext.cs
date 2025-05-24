@@ -60,6 +60,7 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<Store> Stores { get; set; }
     public virtual DbSet<Cart> Carts { get; set; }
     public virtual DbSet<CartItem> CartItem { get; set; }
+    public virtual DbSet<Supplier> Suppliers { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		=> optionsBuilder.UseSqlServer("Data Source=.\\SQLEXPRESS;Initial Catalog=AppDb2;Integrated Security=True;Trust Server Certificate=True");

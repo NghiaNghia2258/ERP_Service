@@ -7,7 +7,7 @@ namespace ERP_Service.Domain.Models.InboundReceipts;
 public class InboundReceipt : EntityBase<Guid>, IAuditableEntity
 {
     public DateTime StockInDate { get; set; } 
-    public string? SupplierId { get; set; }  
+    public int? SupplierId { get; set; }  
     public Guid StoreId { get; set; }  
     public string? Note { get; set; }
     public DateTime CreatedAt { get ; set ; }
@@ -21,6 +21,7 @@ public class InboundReceipt : EntityBase<Guid>, IAuditableEntity
     public string? DeletedBy { get ; set ; }
     public string? DeletedName { get ; set ; }
     public Store Store { get; set; }
+    public Supplier Supplier { get; set; }
 
     public List<InboundReceiptItem> InboundReceiptItems { get; set; } = new();
 

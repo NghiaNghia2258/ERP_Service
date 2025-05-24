@@ -34,4 +34,5 @@ public class Store : EntityBase<Guid>, ISoftDelete
     public UserLogin UserLogin {  get; set; }
     public ICollection<InboundReceipt> InboundReceipts { get; set; }
     public ICollection<Order> Orders { get; set; }
+    public ICollection<Supplier> Suppliers { get; set; }
 }

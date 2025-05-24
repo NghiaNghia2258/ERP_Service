@@ -120,5 +120,21 @@ namespace ERP_Service.API.Controllers
             
             return Ok(new ApiSuccessResult<object>(statistics));
         }
+        [HttpGet("getInboundSelectableProducts")]
+        public async Task<IActionResult> getInboundSelectableProducts()
+        {
+			var res = await _dbContext.ProductVariants
+				.Include(x => x.Product)
+				.Where(x => x.Product.StoreId == _authoziService.PayloadToken.StoreId)
+				.Select(x => new
+				{
+					Id = x.Id.ToString(),
+					Name = $"{x.Product.Name} - {x.PropertyValue1} - {x.PropertyValue2}",
+					Inventory = x.Inventory,
+					Image = x.ImageUrl
+				}).ToListAsync();
+
+            return Ok(new ApiSuccessResult<object>(res));
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using ERP_Service.Application.Services;
 using ERP_Service.Application.Services.Interfaces;
+using ERP_Service.Application.Services.VNPay;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Reflection;
@@ -22,6 +23,7 @@ public static class DependencyInjection
 		builder.Services.AddScoped<IAuthoziService, IdentityServices>();
 		builder.Services.AddScoped<ICacheService, MemoryCacheService>();
 		builder.Services.AddSingleton<IEventBufferService, FileEventBufferService>();
+		builder.Services.AddSingleton<IVnPayService, VnPayService>();
 		//builder.Services.AddHostedService<EventLogProcessorService>();
         //builder.Services.AddScoped<ICacheService, RedisCacheService>();
         builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));

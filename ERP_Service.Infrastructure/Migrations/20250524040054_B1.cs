@@ -15,25 +15,15 @@ namespace ERP_Service.Infrastructure.Migrations
                 name: "StoreId",
                 table: "Orders",
                 type: "uniqueidentifier",
-                nullable: false,
+                nullable: true,
                 defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
 
             migrationBuilder.AddColumn<Guid>(
                 name: "StoreId",
                 table: "InboundReceipts",
                 type: "uniqueidentifier",
-                nullable: false,
+                nullable: true,
                 defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Orders_StoreId",
-                table: "Orders",
-                column: "StoreId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_InboundReceipts_StoreId",
-                table: "InboundReceipts",
-                column: "StoreId");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_InboundReceipts_Store_StoreId",

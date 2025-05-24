@@ -10,6 +10,7 @@ public class InboundReceiptItem: EntityBase<int>
     public int Quantity { get; set; }   
     public decimal UnitPrice { get; set; }
     public int ProductVariantId { get; set; }
+    public Guid InboundReceiptId { get; set; }
     public ProductVariant ProductVariant { get; set; }
     public InboundReceipt InboundReceipt { get; set; }
 }
