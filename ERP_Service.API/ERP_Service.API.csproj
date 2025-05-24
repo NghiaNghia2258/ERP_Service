@@ -33,6 +33,7 @@
   <ItemGroup>
     <Folder Include="Logs\" />
     <Folder Include="Logs\EventBuffers\" />
+    <Folder Include="Public\" />
   </ItemGroup>
 
 </Project>

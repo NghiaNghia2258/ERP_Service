@@ -1,4 +1,5 @@
 ﻿using ERP_Service.Application.Comands.Customers;
+using ERP_Service.Application.Mapper.Model.Carts;
 using ERP_Service.Application.Mapper.Model.Customers;
 using ERP_Service.Application.Queries.Customers;
 using ERP_Service.Application.Services.Interfaces;
@@ -231,46 +232,48 @@ namespace ERP_Service.API.Controllers
             PayloadToken token = _authoziService.PayloadToken;
 
             //Xử lý logic thêm vào giỏ hàng
-            var order = await _dbContext.Orders.Include(x => x.OrderItems).FirstOrDefaultAsync(x => x.PaymentStatus == StatusOrder.Pending && x.CustomerId == token.CustomerId);
-            var orderCount = await _dbContext.Orders.CountAsync();
-            if(order is null)
+            var cart = await _dbContext.Carts
+                .Include(x => x.CartItems)
+                .FirstOrDefaultAsync(x => !x.HasOrder && x.CustomerId == token.CustomerId);
+            if(cart is null)
             {
-                order = new Domain.Models.Orders.Order()
+                cart = new Domain.Models.Orders.Cart()
                 {
-                    Id = Guid.NewGuid(),
-                    Code = $"HD{orderCount.ToString().PadLeft(8, '0')}",
                     CustomerId = token.CustomerId,
-                    CreatedBy = token.CustomerId.ToString(),
-                    CreatedName = token.Username
                 };
-                await _dbContext.Orders.AddAsync(order);
+                await _dbContext.Carts.AddAsync(cart);
+                await _dbContext.SaveChangesAsync();
             }
-            var orderItem = order.OrderItems.FirstOrDefault(x => x.ProductVariantId == dto.ProductId);
-            if(orderItem is null)
+            var variant = await _dbContext.ProductVariants.Include(x => x.Product).FirstOrDefaultAsync(x => x.ProductId == dto.ProductId
+            && x.PropertyValue1 == dto.Property1
+            && x.PropertyValue2 == dto.Property2
+            );
+            var cartItem = cart.CartItems.FirstOrDefault(x => x.ProductVariantId == variant.Id);
+            if(cartItem is null)
             {
-                orderItem = new OrderItem
+                cartItem = new CartItem
                 {
-                    OrderId = order.Id,
-                    ProductVariantId = dto.ProductId,
+                    CartId = cart.Id,
+                    ProductVariantId = variant.Id,
                     Quantity = dto.Quantity,
-                    ImageUrl = dto.ImgUrl,
-                    UnitPrice = dto.Price
+                    ImageUrl = variant?.ImageUrl,
+                    UnitPrice = variant.Price,
+                    StoreId = variant.Product.StoreId
                 };
-                await _dbContext.OrderItems.AddAsync(orderItem);
+                await _dbContext.CartItem.AddAsync(cartItem);
             }
             else
             {
-                orderItem.Quantity += dto.Quantity;
+                cartItem.Quantity += dto.Quantity;
             }
            
             await _dbContext.SaveChangesAsync();
 
-            var productId = (await _dbContext.ProductVariants.FirstOrDefaultAsync(x => x.Id == dto.ProductId))?.ProductId;
             var userEvent = new UserEvent
             {
                 Id = Guid.NewGuid(),
                 UserId = token.CustomerId,
-                ProductId = productId ?? -1,
+                ProductId = dto.ProductId,
                 EventTime = DateTime.UtcNow,
                 Weight = EventWeights.AddToCart.Weight,
                 EventName = EventWeights.AddToCart.Name
@@ -284,11 +287,11 @@ namespace ERP_Service.API.Controllers
         public async Task<IActionResult> RemoveFromCart(int productVariantId)
         {
             PayloadToken token = _authoziService.PayloadToken;
-            var order = await _dbContext.Orders.Include(x => x.OrderItems).FirstOrDefaultAsync(x => x.PaymentStatus == StatusOrder.Pending && x.CustomerId == token.CustomerId);
-            if (order is null) { throw new Exception("Không có order hợp lệ"); }
-            var orderItem = order.OrderItems.FirstOrDefault(x => x.ProductVariantId == productVariantId);
-            if (orderItem is null) { throw new Exception("Không có orderItem hợp lệ"); }
-            _dbContext.OrderItems.Remove(orderItem);
+            var cart = await _dbContext.Carts.Include(x => x.CartItems).FirstOrDefaultAsync(x => !x.HasOrder && x.CustomerId == token.CustomerId);
+            if (cart is null) { throw new Exception("Không có cart hợp lệ"); }
+            var cartItem = cart.CartItems.FirstOrDefault(x => x.ProductVariantId == productVariantId);
+            if (cartItem is null) { throw new Exception("Không có cartItem hợp lệ"); }
+            _dbContext.CartItem.Remove(cartItem);
             await _dbContext.SaveChangesAsync();
 
             var productId = (await _dbContext.ProductVariants.FirstOrDefaultAsync(x => x.Id == productVariantId))?.ProductId;
@@ -307,6 +310,36 @@ namespace ERP_Service.API.Controllers
             await _eventBufferService.AppendEventAsync(eventJson);
             return Ok(new ApiSuccessResult<bool>(true));
         }
-
+        [HttpGet("get-cart")]
+        public async Task<IActionResult> GetCart()
+        {
+            PayloadToken token = _authoziService.PayloadToken;
+            var cart = await _dbContext.Carts
+                .Include(x => x.CartItems)
+                    .ThenInclude(x => x.ProductVariant)
+                    .ThenInclude(x => x.Product)
+                    .ThenInclude(x => x.Store)
+                .Where(x => !x.HasOrder && x.CustomerId == token.CustomerId)
+                .Select(x => new CartDto
+                {
+                    Id = x.Id,
+                    CartItems = x.CartItems.Select(y => new CartItemDto
+                    {
+                        Id = y.Id,
+                        Name = $"{y.ProductVariant.Product.Name}-{y.ProductVariant.PropertyValue1}-{y.ProductVariant.PropertyValue2}",
+                        ImageUrl = y.ProductVariant.ImageUrl,
+                        IsSelected = y.HasSelected,
+                        Price = y.UnitPrice,
+                        ProductId = y.ProductVariant.Id,
+                        Quantity = y.Quantity,
+                        ShopAvatarUrl = y.ProductVariant.Product.Store.Logo,
+                        ShopId = y.ProductVariant.Product.Store.Id,
+                        ShopName = y.ProductVariant.Product.Store.Name
+                    }).ToList()
+                })
+                .FirstOrDefaultAsync();
+            if (cart is null) { throw new Exception("Không có cart hợp lệ"); }
+            return Ok(new ApiSuccessResult<CartDto>(cart));
+        }
     }
 }

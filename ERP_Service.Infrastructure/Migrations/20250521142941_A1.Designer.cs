@@ -4,6 +4,7 @@ using ERP_Service.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ERP_Service.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250521142941_A1")]
+    partial class A1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -215,9 +218,6 @@ namespace ERP_Service.Infrastructure.Migrations
                     b.Property<DateTime>("StockInDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("StoreId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("SupplierId")
                         .HasColumnType("nvarchar(max)");
 
@@ -234,8 +234,6 @@ namespace ERP_Service.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("StoreId");
 
                     b.ToTable("InboundReceipts");
                 });
@@ -347,74 +345,6 @@ namespace ERP_Service.Infrastructure.Migrations
                     b.ToTable("BundleDiscountItem");
                 });
 
-            modelBuilder.Entity("ERP_Service.Domain.Models.Orders.Cart", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<Guid>("CustomerId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("HasOrder")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("Version")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CustomerId");
-
-                    b.ToTable("Carts");
-                });
-
-            modelBuilder.Entity("ERP_Service.Domain.Models.Orders.CartItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CartId")
-                        .HasColumnType("int");
-
-                    b.Property<bool?>("HasSelected")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ProductVariantId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("StoreId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<double>("UnitPrice")
-                        .HasColumnType("float");
-
-                    b.Property<int>("Version")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CartId");
-
-                    b.HasIndex("ProductVariantId");
-
-                    b.HasIndex("StoreId");
-
-                    b.ToTable("CartItem");
-                });
-
             modelBuilder.Entity("ERP_Service.Domain.Models.Orders.ExcludeVolumeDiscountItem", b =>
                 {
                     b.Property<int>("Id")
@@ -504,9 +434,6 @@ namespace ERP_Service.Infrastructure.Migrations
                     b.Property<Guid?>("RecipientsInformationId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("StoreId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<double>("Tax")
                         .HasColumnType("float");
 
@@ -534,8 +461,6 @@ namespace ERP_Service.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
-
-                    b.HasIndex("StoreId");
 
                     b.HasIndex("VoucherId");
 
@@ -1735,17 +1660,6 @@ namespace ERP_Service.Infrastructure.Migrations
                     b.Navigation("UserLogin");
                 });
 
-            modelBuilder.Entity("ERP_Service.Domain.Models.InboundReceipts.InboundReceipt", b =>
-                {
-                    b.HasOne("ERP_Service.Domain.Models.Stores.Store", "Store")
-                        .WithMany("InboundReceipts")
-                        .HasForeignKey("StoreId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Store");
-                });
-
             modelBuilder.Entity("ERP_Service.Domain.Models.InboundReceipts.InboundReceiptItem", b =>
                 {
                     b.HasOne("ERP_Service.Domain.Models.InboundReceipts.InboundReceipt", "InboundReceipt")
@@ -1784,44 +1698,6 @@ namespace ERP_Service.Infrastructure.Migrations
                     b.Navigation("ProductVariant");
                 });
 
-            modelBuilder.Entity("ERP_Service.Domain.Models.Orders.Cart", b =>
-                {
-                    b.HasOne("ERP_Service.Domain.Models.Customer", "Customer")
-                        .WithMany("Carts")
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Customer");
-                });
-
-            modelBuilder.Entity("ERP_Service.Domain.Models.Orders.CartItem", b =>
-                {
-                    b.HasOne("ERP_Service.Domain.Models.Orders.Cart", "Cart")
-                        .WithMany("CartItems")
-                        .HasForeignKey("CartId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("ERP_Service.Domain.Models.Products.ProductVariant", "ProductVariant")
-                        .WithMany()
-                        .HasForeignKey("ProductVariantId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("ERP_Service.Domain.Models.Stores.Store", "Store")
-                        .WithMany()
-                        .HasForeignKey("StoreId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Cart");
-
-                    b.Navigation("ProductVariant");
-
-                    b.Navigation("Store");
-                });
-
             modelBuilder.Entity("ERP_Service.Domain.Models.Orders.ExcludeVolumeDiscountItem", b =>
                 {
                     b.HasOne("ERP_Service.Domain.Models.Products.ProductVariant", "ProductVariant")
@@ -1848,20 +1724,12 @@ namespace ERP_Service.Infrastructure.Migrations
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("ERP_Service.Domain.Models.Stores.Store", "Store")
-                        .WithMany("Orders")
-                        .HasForeignKey("StoreId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("ERP_Service.Domain.Models.Orders.Voucher", "Voucher")
                         .WithMany("Orders")
                         .HasForeignKey("VoucherId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Customer");
-
-                    b.Navigation("Store");
 
                     b.Navigation("Voucher");
                 });
@@ -2026,8 +1894,6 @@ namespace ERP_Service.Infrastructure.Migrations
 
             modelBuilder.Entity("ERP_Service.Domain.Models.Customer", b =>
                 {
-                    b.Navigation("Carts");
-
                     b.Navigation("Orders");
 
                     b.Navigation("ProductRates");
@@ -2043,11 +1909,6 @@ namespace ERP_Service.Infrastructure.Migrations
             modelBuilder.Entity("ERP_Service.Domain.Models.Orders.BundleDiscount", b =>
                 {
                     b.Navigation("BundleDiscountItems");
-                });
-
-            modelBuilder.Entity("ERP_Service.Domain.Models.Orders.Cart", b =>
-                {
-                    b.Navigation("CartItems");
                 });
 
             modelBuilder.Entity("ERP_Service.Domain.Models.Orders.Order", b =>
@@ -2094,13 +1955,6 @@ namespace ERP_Service.Infrastructure.Migrations
             modelBuilder.Entity("ERP_Service.Domain.Models.RoleGroup", b =>
                 {
                     b.Navigation("UserLogins");
-                });
-
-            modelBuilder.Entity("ERP_Service.Domain.Models.Stores.Store", b =>
-                {
-                    b.Navigation("InboundReceipts");
-
-                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("ERP_Service.Domain.Models.UserLogin", b =>

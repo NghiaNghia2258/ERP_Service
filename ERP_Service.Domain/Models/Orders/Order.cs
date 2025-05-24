@@ -1,5 +1,6 @@
 ﻿using ERP_Service.Domain.Abstractions;
 using ERP_Service.Domain.Abstractions.Model;
+using ERP_Service.Domain.Models.Stores;
 
 namespace ERP_Service.Domain.Models.Orders;
 
@@ -9,6 +10,7 @@ public partial class Order : EntityBase<Guid>, IAuditableEntity
 	public string? Note { get; set; }
 	public string? Name { get; set; }
 	public Guid? CustomerId { get; set; }
+	public Guid StoreId { get; set; }
 	public string? CustomerName { get; set; }
 	public string? CustomerPhone { get; set; }
 	public string? CustomerNote { get; set; }
@@ -38,7 +40,8 @@ public partial class Order : EntityBase<Guid>, IAuditableEntity
 
 	public virtual Customer? Customer { get; set; }
 
-	public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
+    public Store Store { get; set; }
+    public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 	public virtual Voucher? Voucher { get; set; }
 	
 }

@@ -34,6 +34,7 @@ public class ProductRepository : RepositoryBase<Product, int>, IProductRepositor
 			.Include(p => p.Category)
 			.Include(p => p.ProductRates)
 			.Include(p => p.ProductVariants)
+			.Where(x => x.StoreId == _payloadToken.StoreId)
             .Select(q => new Product
 			{
 				Id = q.Id,
@@ -64,6 +65,8 @@ public class ProductRepository : RepositoryBase<Product, int>, IProductRepositor
                     Id = x.Id,
                     Name = x.Name,
                     NameEn = x.NameEn,
+					Price = x.Price,
+					OriginalPrice = x.OriginalPrice,
                     Description = x.Description,
                     MainImageUrl = x.MainImageUrl,
                     TotalInventory = x.TotalInventory,

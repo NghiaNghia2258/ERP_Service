@@ -1,4 +1,5 @@
 ﻿using ERP_Service.Application.Mapper.Model.Inbounds;
+using ERP_Service.Application.Services.Interfaces;
 using ERP_Service.Domain.ApiResult;
 using ERP_Service.Domain.Models.InboundReceipts;
 using ERP_Service.Domain.PagingRequest;
@@ -12,7 +13,8 @@ namespace ERP_Service.API.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 public class InboundReceiptsController(
-     AppDbContext _context
+     AppDbContext _context,
+     IAuthoziService _authoziService
     ) : ControllerBase
 {
     [HttpGet("{id}")]
@@ -75,6 +77,7 @@ public class InboundReceiptsController(
     {
         var data = _context.InboundReceipts
             .Include(ir => ir.InboundReceiptItems)
+            .Where(ir => ir.StoreId == _authoziService.PayloadToken.StoreId)
             .OrderByDescending(ir => ir.CreatedAt);
 
         int begin = option.PageSize * (option.PageIndex - 1);

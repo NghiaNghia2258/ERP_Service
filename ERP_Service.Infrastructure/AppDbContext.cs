@@ -4,6 +4,7 @@ using ERP_Service.Domain.Models;
 using ERP_Service.Domain.Models.InboundReceipts;
 using ERP_Service.Domain.Models.Orders;
 using ERP_Service.Domain.Models.Products;
+using ERP_Service.Domain.Models.Stores;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -56,6 +57,9 @@ public partial class AppDbContext : DbContext
     #endregion
     public virtual DbSet<UserEvent> UserEvents { get; set; }
     public virtual DbSet<UserProductScore> UserProductScores { get; set; }
+    public virtual DbSet<Store> Stores { get; set; }
+    public virtual DbSet<Cart> Carts { get; set; }
+    public virtual DbSet<CartItem> CartItem { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		=> optionsBuilder.UseSqlServer("Data Source=.\\SQLEXPRESS;Initial Catalog=AppDb2;Integrated Security=True;Trust Server Certificate=True");
