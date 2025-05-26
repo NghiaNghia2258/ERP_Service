@@ -4,6 +4,6 @@ namespace ERP_Service.Application.Services.VNPay;
 
 public interface IVnPayService
 {
-    string CreatePaymentUrl(VnPayRequestModel model);
-    bool ValidateResponse(IQueryCollection query);
+    string CreatePaymentUrl(PaymentInformationModel model, HttpContext context);
+    PaymentResponseModel PaymentExecute(IQueryCollection collections);
 }

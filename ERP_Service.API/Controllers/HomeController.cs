@@ -1,4 +1,5 @@
 ﻿using ERP_Service.Application.Services.Interfaces;
+using ERP_Service.Domain.ApiResult;
 using ERP_Service.Infrastructure;
 using ERP_Service.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -22,17 +23,20 @@ public class HomeController(AppDbContext _dbContext, IAuthoziService _authoziSer
         .Include(p => p.Category)
         .Include(p => p.Brand)
         .Include(p => p.ProductVariants)
+        .Where(x => x.SellCount > averageSellCount)
         .Select(p => new
         {
             id = p.Id,
             name = p.Name,
             images = JsonConvert.DeserializeObject<List<string>>(p.ImageUrls),
             price = p.ProductVariants.OrderBy(v => v.Price).FirstOrDefault()!.Price,
+            originalPrice = p.OriginalPrice,
+            discount = p.OriginalPrice > 1 ? (100 - (p.Price / p.OriginalPrice) * 100) : 0,
             rating = p.Rate,
             reviewCount = p.RateCount,
             inStock = p.TotalInventory > 0,
             isNew = p.CreatedAt >= DateTime.Now.AddDays(-30),
-            isBestSeller = p.SellCount >= 1000,
+            isBestSeller = p.SellCount >= averageSellCount,
             category = p.Category.Name,
             brand = p.Brand.Name,
             shortDescription = p.Description
@@ -40,6 +44,64 @@ public class HomeController(AppDbContext _dbContext, IAuthoziService _authoziSer
         .ToListAsync();
 
         return Ok("");
+    }
+    [HttpGet("get-product-for-store")]
+    public async Task<IActionResult> GetProductInStore([FromQuery] OptionFilter option)
+    {
+        int begin = (option.PageIndex - 1) * option.PageSize;
+        int take = option.PageSize;
+
+        var averageSellCount = await _dbContext.Products
+            .AverageAsync(p => p.SellCount);
+
+        var query = _dbContext.Products
+        .Include(p => p.ProductRates)
+        .Include(p => p.Category)
+        .Include(p => p.Brand)
+        .Where(x => x.StoreId == option.StoreId);
+
+        if(option.SortBy == "popular")
+        {
+            query = query.OrderByDescending(x => x.SellCount);
+        }else if(option.SortBy == "price-asc")
+        {
+            query = query.OrderBy(x => x.Price);
+        }else if(option.SortBy == "price-desc")
+        {
+            query = query.OrderByDescending(x => x.Price);
+        }
+        else if(option.SortBy == "newest")
+        {
+            query = query.OrderByDescending(x => x.CreatedAt);
+        }
+        else if(option.SortBy == "rating")
+        {
+            query = query.OrderByDescending(x => x.ProductRates.Average(y => y.Rating));
+        }
+
+        var products = await query.Select(p => new
+        {
+            id = p.Id,
+            name = p.Name,
+            images = JsonConvert.DeserializeObject<List<string>>(p.ImageUrls),
+            price = p.Price,
+            originalPrice = p.OriginalPrice,
+            discount = p.OriginalPrice > 1 ? (100 - (p.Price / p.OriginalPrice) * 100) : 0,
+            rating = p.Rate,
+            reviewCount = p.RateCount,
+            inStock = p.TotalInventory > 0,
+            isNew = p.CreatedAt >= DateTime.Now.AddDays(-30),
+            isBestSeller = p.SellCount >= averageSellCount,
+            category = p.Category.Name,
+            brand = p.Brand.Name,
+            shortDescription = p.Description
+        })
+            .Skip(begin).Take(take)
+        .ToListAsync();
+        return Ok(new ApiSuccessResult<object>(products)
+        {
+            TotalRecordsCount = query.Count(),
+        });
     }
     [HttpGet("get-recommend")]
     public async Task<IActionResult> GetRecommendedProductIds()
@@ -132,4 +194,11 @@ public class HomeController(AppDbContext _dbContext, IAuthoziService _authoziSer
 
         return dot / (norm1 * norm2);
     }
+}
+public class OptionFilter
+{
+    public int PageIndex { get; set; } = 1;
+    public int PageSize { get; set; } = 30;
+    public string SortBy { get; set; } = "popular";
+    public Guid StoreId { get; set; }
 }

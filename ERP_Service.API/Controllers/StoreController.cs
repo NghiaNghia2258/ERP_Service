@@ -100,6 +100,7 @@ public class StoreController(
 
         return Ok(new ApiSuccessResult());
     }
+
 }
 public class RegisterDto
 {

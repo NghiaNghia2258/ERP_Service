@@ -27,9 +27,7 @@ public class Customer : EntityBase<Guid>, ICreateTracking, ISoftDelete
 	public DateTime? DeletedAt { get; set; }
 	public string? DeletedBy { get; set; }
 	public string? DeletedName { get; set; }
-	public Guid StoreId { get; set; }
     public UserLogin UserLogin { get; set; }
-    public virtual Store Store { get; set; } = null!;
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
     public virtual ICollection<Cart> Carts { get; set; } = new List<Cart>();
 	public virtual ICollection<ProductRate> ProductRates { get; set; } = new List<ProductRate>();

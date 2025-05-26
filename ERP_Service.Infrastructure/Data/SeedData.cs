@@ -157,7 +157,6 @@ public static class SeedData
                 CreatedBy = "admin",
                 CreatedName = "Admin",
                 IsDeleted = false,
-                StoreId = storeId
             },
             new Customer
             {
@@ -173,7 +172,6 @@ public static class SeedData
                 CreatedBy = "admin",
                 CreatedName = "Admin",
                 IsDeleted = false,
-                StoreId = storeId
             },
             new Customer
             {
@@ -189,7 +187,6 @@ public static class SeedData
                 CreatedBy = "admin",
                 CreatedName = "Admin",
                 IsDeleted = false,
-                StoreId = storeId
             },
             new Customer
             {
@@ -205,7 +202,6 @@ public static class SeedData
                 CreatedBy = "admin",
                 CreatedName = "Admin",
                 IsDeleted = false,
-                StoreId = storeId
             },
             new Customer
             {
@@ -221,7 +217,6 @@ public static class SeedData
                 CreatedBy = "admin",
                 CreatedName = "Admin",
                 IsDeleted = false,
-                StoreId = storeId
             }
         };
 

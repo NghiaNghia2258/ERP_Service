@@ -159,7 +159,7 @@ namespace ERP_Service.API.Controllers
         {
             PayloadToken token = _authoziService.PayloadToken;
 
-			var query = _dbContext.Customers.Where(x => x.StoreId.Equals(token.StoreId));
+			var query = _dbContext.Customers;
 
             var result = new
 			{
@@ -257,8 +257,7 @@ namespace ERP_Service.API.Controllers
                     ProductVariantId = variant.Id,
                     Quantity = dto.Quantity,
                     ImageUrl = variant?.ImageUrl,
-                    UnitPrice = variant.Price,
-                    StoreId = variant.Product.StoreId
+                    UnitPrice = variant.Price
                 };
                 await _dbContext.CartItem.AddAsync(cartItem);
             }

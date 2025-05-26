@@ -23,6 +23,7 @@ public class CreateProductDto
     public int? CategoryId { get; set; }
     public int? BrandId { get; set; }
     public decimal Price { get; set; }
+    public decimal OriginalPrice { get; set; }
     public string? Description { get; set; }
     public bool IsPhysicalProduct { get; set; }
     public decimal Weight { get; set; }
