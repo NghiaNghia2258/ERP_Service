@@ -87,7 +87,7 @@ public class ProductRepository : RepositoryBase<Product, int>, IProductRepositor
 					CreatedAt = x.CreatedAt,
 					CreatedBy = x.CreatedBy,
 					CreatedName = x.CreatedName,
-					ProductVariants = x.ProductVariants.Select(y => new ProductVariant()
+					ProductVariants = x.ProductVariants.Where(x => x.IsActivate).Select(y => new ProductVariant()
 					{
 						Id = y.Id,
 						PropertyValue1 = y.PropertyValue1,

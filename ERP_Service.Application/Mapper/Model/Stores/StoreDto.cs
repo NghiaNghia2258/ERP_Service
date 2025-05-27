@@ -7,6 +7,10 @@ public class StoreDto
     public string Description { get; set; } = default!;
     public string Logo { get; set; } = default!;
     public string CoverImage { get; set; } = default!;
+    public double Rating { get; set; } = default!;
+    public double ReviewCount { get; set; } = default!;
+    public double Followers { get; set; } = default!;
+    public bool Verified { get; set; } = default!;
     public string Location { get; set; } = default!;
     public string ContactPhone { get; set; } = default!;
     public string ContactEmail { get; set; } = default!;
@@ -16,6 +20,7 @@ public class StoreDto
     public string? Twitter { get; set; }
     public string? UserName { get; set; }
     public string? Password { get; set; }
+    public bool? IsFollow { get; set; }
 }
 public class StorePolicyDto
 {

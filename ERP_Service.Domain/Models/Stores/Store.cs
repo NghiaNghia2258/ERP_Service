@@ -2,6 +2,7 @@
 using ERP_Service.Domain.Abstractions.Model;
 using ERP_Service.Domain.Models.InboundReceipts;
 using ERP_Service.Domain.Models.Orders;
+using ERP_Service.Domain.Models.Products;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ERP_Service.Domain.Models.Stores;
@@ -35,4 +36,5 @@ public class Store : EntityBase<Guid>, ISoftDelete
     public ICollection<InboundReceipt> InboundReceipts { get; set; }
     public ICollection<Order> Orders { get; set; }
     public ICollection<Supplier> Suppliers { get; set; }
+
 }

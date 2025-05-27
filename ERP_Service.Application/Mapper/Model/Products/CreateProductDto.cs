@@ -7,6 +7,7 @@ public class ProductSpecificationAttribute
 }
 public class VariantCreate
 {
+    public int Id { get; set; }
     public string PropertyValue1 { get; set; } = string.Empty;
     public string PropertyValue2 { get; set; } = string.Empty;
     public decimal Price { get; set; }

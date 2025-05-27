@@ -66,6 +66,38 @@ public class StoreController(
             Password = store.UserLogin.Password
         }));
     }
+    [HttpGet("store-info-customer/{id}")]
+    public async Task<IActionResult> GetStoreInfo(Guid id)
+    {
+        var store = await _dbContext.Stores
+            .FirstOrDefaultAsync(s => s.Id == id);
+
+        if (store == null)
+        {
+            return NotFound(new ApiErrorResult());
+        }
+
+        return Ok(new ApiSuccessResult<StoreDto>(new StoreDto
+        {
+            Id = store.Id.ToString(),
+            Name = store.Name,
+            Description = store.Description,
+            Logo = store.Logo,
+            CoverImage = store.CoverImage,
+            Location = store.Location,
+            Rating = 4.7,
+            Followers = 23,
+            ReviewCount = 12,
+            IsFollow = true,
+            Verified = true,
+            ContactPhone = store.ContactPhone,
+            ContactEmail = store.ContactEmail,
+            Facebook = store.Facebook,
+            Instagram = store.Instagram,
+            Twitter = store.Twitter,
+            Policies = JsonConvert.DeserializeObject<List<StorePolicyDto>>(store.Policies),
+        }));
+    }
     [HttpPut("update")]
     public async Task<IActionResult> Update([FromBody] UpdateStoreDto model)
     {

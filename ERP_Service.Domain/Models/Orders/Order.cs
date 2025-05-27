@@ -1,5 +1,6 @@
 ﻿using ERP_Service.Domain.Abstractions;
 using ERP_Service.Domain.Abstractions.Model;
+using ERP_Service.Domain.Models.Customers;
 using ERP_Service.Domain.Models.Stores;
 
 namespace ERP_Service.Domain.Models.Orders;
@@ -14,19 +15,13 @@ public partial class Order : EntityBase<Guid>, IAuditableEntity
 	public string? CustomerName { get; set; }
 	public string? CustomerPhone { get; set; }
 	public string? CustomerNote { get; set; }
-
 	public int PaymentStatus { get; set; } = 1!;
-
 	public double Tax { get; set; } = 0!;
-
 	public double? DiscountPercent { get; set; } = 0!;
-
 	public double? DiscountValue { get; set; } = 0!;
 	public double TotalPrice { get; set; } = 0!;
 	public Guid? VoucherId { get; set; }
 	public string? VoucherCode { get; set; }
-
-	public Guid? RecipientsInformationId { get; set; }
 	public DateTime CreatedAt { get; set; } = DateTime.Now;
 	public string CreatedBy { get; set; } = null!;
 	public string CreatedName { get; set; } = null!;
@@ -37,11 +32,11 @@ public partial class Order : EntityBase<Guid>, IAuditableEntity
 	public DateTime? DeletedAt { get; set; }
 	public string? DeletedBy { get; set; }
 	public string? DeletedName { get; set; }
-
+	public string? ShippingAddressId { get; set; }
 	public virtual Customer? Customer { get; set; }
-
     public Store Store { get; set; }
     public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 	public virtual Voucher? Voucher { get; set; }
-	
+	public virtual ShippingAddress? ShippingAddress { get; set; }
+
 }

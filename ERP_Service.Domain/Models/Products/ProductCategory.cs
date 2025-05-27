@@ -1,4 +1,5 @@
 ﻿using ERP_Service.Domain.Abstractions;
+using ERP_Service.Domain.Models.Stores;
 
 namespace ERP_Service.Domain.Models.Products;
 
