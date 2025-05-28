@@ -1,8 +1,10 @@
 ﻿using ERP_Service.Domain.Abstractions;
 using ERP_Service.Domain.Models.Orders;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ERP_Service.Domain.Models.Customers;
 
+[Table("ShippingAddress")]
 public class ShippingAddress: EntityBase<string>
 {
     public string FullName { get; set; } = string.Empty;

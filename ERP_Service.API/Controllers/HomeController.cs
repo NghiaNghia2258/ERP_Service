@@ -22,28 +22,27 @@ public class HomeController(AppDbContext _dbContext, IAuthoziService _authoziSer
         .Include(p => p.ProductRates)
         .Include(p => p.Category)
         .Include(p => p.Brand)
-        .Include(p => p.ProductVariants)
-        .Where(x => x.SellCount > averageSellCount)
+        .Where(x => x.SellCount >= averageSellCount)
         .Select(p => new
         {
             id = p.Id,
             name = p.Name,
             images = JsonConvert.DeserializeObject<List<string>>(p.ImageUrls),
-            price = p.ProductVariants.OrderBy(v => v.Price).FirstOrDefault()!.Price,
+            price = p.Price,
             originalPrice = p.OriginalPrice,
             discount = p.OriginalPrice > 1 ? (100 - (p.Price / p.OriginalPrice) * 100) : 0,
             rating = p.Rate,
             reviewCount = p.RateCount,
             inStock = p.TotalInventory > 0,
             isNew = p.CreatedAt >= DateTime.Now.AddDays(-30),
-            isBestSeller = p.SellCount >= averageSellCount,
+            isBestSeller = true,
             category = p.Category.Name,
             brand = p.Brand.Name,
             shortDescription = p.Description
-        })
+        }).Take(8)
         .ToListAsync();
 
-        return Ok("");
+        return Ok(products);
     }
     [HttpGet("get-product-for-store")]
     public async Task<IActionResult> GetProductInStore([FromQuery] OptionFilter option)
@@ -58,7 +57,9 @@ public class HomeController(AppDbContext _dbContext, IAuthoziService _authoziSer
         .Include(p => p.ProductRates)
         .Include(p => p.Category)
         .Include(p => p.Brand)
-        .Where(x => x.StoreId == option.StoreId);
+        .Where(x => (option.StoreId == null || x.StoreId == option.StoreId)
+        && (option.keyWord == null || x.Name.Contains(option.keyWord))
+        );
 
         if(option.SortBy == "popular")
         {
@@ -103,12 +104,57 @@ public class HomeController(AppDbContext _dbContext, IAuthoziService _authoziSer
             TotalRecordsCount = query.Count(),
         });
     }
+    [HttpGet("get-review")]
+    public async Task<IActionResult> GetReview([FromQuery] OptionFilterReview option)
+    {
+        var query = _dbContext.ProductRates
+            .Include(x => x.Customer)
+            .Where(x => x.ProductId == option.ProductId);
+        var data = await query.Select(x => new
+        {
+            id = x.Id,
+            user = x.Customer.Name,
+            rating = x.Rating,
+            comment = x.Review,
+        }).ToListAsync();
+
+        return Ok(new
+        {
+            total = query.Count(),
+            data = data,
+            avgRating = query.Average(x => x.Rating)
+        });
+    }
     [HttpGet("get-recommend")]
     public async Task<IActionResult> GetRecommendedProductIds()
     {
         PayloadToken token = _authoziService.PayloadToken;
         IEnumerable<int> productIds = await GetProductIds(token.CustomerId);
-        return Ok();
+
+        var products = await _dbContext.Products
+        .Include(p => p.ProductRates)
+        .Include(p => p.Category)
+        .Include(p => p.Brand)
+        .Where(x => productIds.Contains(x.Id))
+        .Select(p => new
+        {
+            id = p.Id,
+            name = p.Name,
+            images = JsonConvert.DeserializeObject<List<string>>(p.ImageUrls),
+            price = p.Price,
+            originalPrice = p.OriginalPrice,
+            discount = p.OriginalPrice > 1 ? (100 - (p.Price / p.OriginalPrice) * 100) : 0,
+            rating = p.Rate,
+            reviewCount = p.RateCount,
+            inStock = p.TotalInventory > 0,
+            isNew = p.CreatedAt >= DateTime.Now.AddDays(-30),
+            isBestSeller = true,
+            category = p.Category.Name,
+            brand = p.Brand.Name,
+            shortDescription = p.Description
+        }).Take(8)
+        .ToListAsync();
+        return Ok(products);
     }
     private async Task<IEnumerable<int>> GetProductIds(Guid customerId)
     {
@@ -199,6 +245,13 @@ public class OptionFilter
 {
     public int PageIndex { get; set; } = 1;
     public int PageSize { get; set; } = 30;
-    public string SortBy { get; set; } = "popular";
-    public Guid StoreId { get; set; }
+    public string? SortBy { get; set; } = "popular";
+    public Guid? StoreId { get; set; }
+    public string? keyWord { get; set; }
+}
+public class OptionFilterReview
+{
+    public int PageIndex { get; set; } = 1;
+    public int PageSize { get; set; } = 30;
+    public int ProductId { get; set; }
 }

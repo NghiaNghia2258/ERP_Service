@@ -1,6 +1,7 @@
 ﻿using ERP_Service.DAL.Data;
 using ERP_Service.Domain.Abstractions.Model;
 using ERP_Service.Domain.Models;
+using ERP_Service.Domain.Models.Customers;
 using ERP_Service.Domain.Models.InboundReceipts;
 using ERP_Service.Domain.Models.Orders;
 using ERP_Service.Domain.Models.Products;
@@ -61,6 +62,7 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<Cart> Carts { get; set; }
     public virtual DbSet<CartItem> CartItem { get; set; }
     public virtual DbSet<Supplier> Suppliers { get; set; }
+    public virtual DbSet<ShippingAddress> ShippingAddresses { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		=> optionsBuilder.UseSqlServer("Data Source=.\\SQLEXPRESS;Initial Catalog=AppDb2;Integrated Security=True;Trust Server Certificate=True");
