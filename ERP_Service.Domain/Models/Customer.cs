@@ -9,11 +9,12 @@ namespace ERP_Service.Domain.Models;
 
 public class Customer : EntityBase<Guid>, ICreateTracking, ISoftDelete
 {
-	public string Name { get; set; } = null!;
-	public string? Code { get; set; }
+    public string? Code { get; set; }
+    public bool? IsActive { get; set; }
+
+    public string Name { get; set; } = null!;
 	public string? Phone { get; set; }
 	public string? Email { get; set; }
-	public bool? IsActive { get; set; }
 
     public string Gender { get; set; } = null!;
 	public int Point { get; set; } = 0;

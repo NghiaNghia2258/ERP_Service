@@ -7,6 +7,7 @@ using ERP_Service.Domain.ApiResult;
 using ERP_Service.Domain.Const;
 using ERP_Service.Domain.Models;
 using ERP_Service.Domain.Models.Orders;
+using ERP_Service.Domain.Models.Stores;
 using ERP_Service.Domain.PagingRequest;
 using ERP_Service.Infrastructure;
 using ERP_Service.Shared.Models;
@@ -257,7 +258,8 @@ namespace ERP_Service.API.Controllers
                     ProductVariantId = variant.Id,
                     Quantity = dto.Quantity,
                     ImageUrl = variant?.ImageUrl,
-                    UnitPrice = variant.Price
+                    UnitPrice = variant.Price,
+                    StoreId = variant.Product.StoreId
                 };
                 await _dbContext.CartItem.AddAsync(cartItem);
             }
@@ -314,7 +316,7 @@ namespace ERP_Service.API.Controllers
         {
             PayloadToken token = _authoziService.PayloadToken;
             var cart = await _dbContext.Carts
-                .Include(x => x.CartItems)
+                .Include(x => x.CartItems.Where(x => x.StoreId != null))
                     .ThenInclude(x => x.ProductVariant)
                     .ThenInclude(x => x.Product)
                     .ThenInclude(x => x.Store)
@@ -340,5 +342,39 @@ namespace ERP_Service.API.Controllers
             if (cart is null) { throw new Exception("Không có cart hợp lệ"); }
             return Ok(new ApiSuccessResult<CartDto>(cart));
         }
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] RegisterCustomerDto model)
+        {
+            UserLogin newUser = new UserLogin()
+            {
+                Username = model.Username,
+                Password = model.Password,
+                RoleGroupId = 2,
+                Customers = new List<Customer>()
+                {
+                    new Customer()
+                    {
+                        Name = model.Name,
+                        Phone = model.Phone,
+                        Email = model.Email,
+                        Gender = model.Gender
+                    }
+                }
+            };
+
+            _dbContext.UserLogins.Add(newUser);
+            await _dbContext.SaveChangesAsync();
+
+            return Ok(new ApiSuccessResult());
+        }
     }
+}
+public class RegisterCustomerDto
+{
+    public string? Name { get; set; } = default!;
+    public string? Phone { get; set; } = default!;
+    public string? Email { get; set; } = default!;
+    public string? Gender { get; set; } = default!;
+    public string? Username { get; set; } = default!;
+    public string? Password { get; set; } = default!;
 }

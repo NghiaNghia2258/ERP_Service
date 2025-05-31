@@ -31,7 +31,8 @@ namespace ERP_Service.API.Controllers
 				TokenLogin tokenLogin = new TokenLogin()
 				{
 					AccessToken = JwtTokenHelper.GenerateJwtToken(token, _configuration),
-					RefreshToken = JwtTokenHelper.GenerateJwtToken(token, _configuration)
+					RefreshToken = JwtTokenHelper.GenerateJwtToken(token, _configuration),
+					RoleId = token.RoleId
 				};
 				res = new ApiSuccessResult<TokenLogin>(tokenLogin);
 			}

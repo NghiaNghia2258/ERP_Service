@@ -2,19 +2,19 @@
 
 public class StoreDto
 {
-    public string Id { get; set; } = default!;
-    public string Name { get; set; } = default!;
-    public string Description { get; set; } = default!;
-    public string Logo { get; set; } = default!;
-    public string CoverImage { get; set; } = default!;
-    public double Rating { get; set; } = default!;
-    public double ReviewCount { get; set; } = default!;
-    public double Followers { get; set; } = default!;
-    public bool Verified { get; set; } = default!;
-    public string Location { get; set; } = default!;
-    public string ContactPhone { get; set; } = default!;
-    public string ContactEmail { get; set; } = default!;
-    public List<StorePolicyDto> Policies { get; set; } = new();
+    public string? Id { get; set; } = default!;
+    public string? Name { get; set; } = default!;
+    public string? Description { get; set; } = default!;
+    public string? Logo { get; set; } = default!;
+    public string? CoverImage { get; set; } = default!;
+    public double? Rating { get; set; } = default!;
+    public double? ReviewCount { get; set; } = default!;
+    public double? Followers { get; set; } = default!;
+    public bool? Verified { get; set; } = default!;
+    public string? Location { get; set; } = default!;
+    public string? ContactPhone { get; set; } = default!;
+    public string? ContactEmail { get; set; } = default!;
+    public List<StorePolicyDto>? Policies { get; set; } = new();
     public string? Facebook { get; set; }
     public string? Instagram { get; set; }
     public string? Twitter { get; set; }
@@ -24,6 +24,6 @@ public class StoreDto
 }
 public class StorePolicyDto
 {
-    public string Title { get; set; } = default!;
-    public string Description { get; set; } = default!;
+    public string? Title { get; set; } = default!;
+    public string? Description { get; set; } = default!;
 }

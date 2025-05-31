@@ -6,7 +6,6 @@ using ERP_Service.Domain.Models.Stores;
 using ERP_Service.Infrastructure;
 using ERP_Service.Shared.Models;
 using ERP_Service.Shared.Utilities;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -17,7 +16,8 @@ namespace ERP_Service.API.Controllers;
 [ApiController]
 public class StoreController(
      AppDbContext _dbContext,
-     IAuthoziService _authoziService
+     IAuthoziService _authoziService,
+     IMailService _mailService
     ) : ControllerBase
 {
     [HttpPost("register")]
@@ -25,11 +25,22 @@ public class StoreController(
     {
         UserLogin newUser = new UserLogin()
         {
-            Username = model.Username,
-            Password = model.Password,
+            Username = model.ContactEmail,
+            Password = "",
             RoleGroupId = 3,
-            Stores = new List<Store>() { new Store() }
+            Stores = new List<Store>() { new Store() { 
+                Name = model.Name,
+                Description = model.Description,
+                Logo = model.Logo,
+                Location = model.Location,
+                ContactEmail = model.ContactEmail,
+                ContactPhone = model.ContactPhone,
+                Facebook = model.Facebook,
+                Instagram = model.Instagram,
+                Twitter = model.Twitter,
+            } }
         };
+
         _dbContext.UserLogins.Add(newUser);
         await _dbContext.SaveChangesAsync();
 
@@ -89,13 +100,13 @@ public class StoreController(
             Followers = 23,
             ReviewCount = 12,
             IsFollow = true,
-            Verified = true,
+            Verified = store.Verified,
             ContactPhone = store.ContactPhone,
             ContactEmail = store.ContactEmail,
             Facebook = store.Facebook,
             Instagram = store.Instagram,
             Twitter = store.Twitter,
-            Policies = JsonConvert.DeserializeObject<List<StorePolicyDto>>(store.Policies),
+            Policies = JsonConvert.DeserializeObject<List<StorePolicyDto>>(store.Policies ??"[]"),
         }));
     }
     [HttpPut("update")]
@@ -132,10 +143,92 @@ public class StoreController(
 
         return Ok(new ApiSuccessResult());
     }
+    [HttpGet("get-all")]
+    public async Task<IActionResult> GetAll([FromQuery] OptionFilterStore request)
+    {
+        var query = _dbContext.Stores.AsQueryable();
 
+        if (!string.IsNullOrEmpty(request.KeyWord))
+        {
+            query = query.Where(x =>
+                x.Name.Contains(request.KeyWord) ||
+                x.Location.Contains(request.KeyWord) ||
+                x.ContactEmail.Contains(request.KeyWord) ||
+                x.ContactPhone.Contains(request.KeyWord));
+        }
+
+        int totalRow = await query.CountAsync();
+
+        var data = await query
+            .Skip((request.PageIndex - 1) * request.PageSize)
+            .Take(request.PageSize)
+            .Select(x => new StoreDto   
+            {
+                Id = x.Id.ToString(),
+                Name = x.Name,
+                Location = x.Location,
+                ContactPhone = x.ContactPhone,
+                ContactEmail = x.ContactEmail,
+                Verified = x.Verified ?? false,
+            })
+            .ToListAsync();
+
+        return Ok(new ApiSuccessResult<List<StoreDto>>(data)
+        {
+            TotalRecordsCount = totalRow,
+        });
+    }
+    [HttpGet("active-store/{id}")]
+    public async Task<IActionResult> ActiveStore(Guid id)
+    {
+        var store = await _dbContext.Stores.Include(x => x.UserLogin).FirstOrDefaultAsync(x => x.Id == id);
+        store.Verified = true;
+        store.UserLogin.Password = GenerateRandomString(6);
+        await _dbContext.SaveChangesAsync();
+        string body = $@"
+                <h2>Xin chào {store.Name},</h2>
+                <p>Cửa hàng của bạn đã được đăng ký thành công trên hệ thống ERP.</p>
+                <p><b>Thông tin đăng nhập:</b></p>
+                <ul>
+                    <li><b>Email:</b> {store.ContactEmail}</li>
+                    <li><b>Mật khẩu:</b> {store.UserLogin.Password}</li>
+                </ul>
+                <p>Hãy đăng nhập và cập nhật thông tin cửa hàng của bạn nhé!</p>
+                <hr />
+                <p>Trân trọng,<br/>Đội ngũ hỗ trợ ERP</p>";
+
+        _ = Task.Run(() =>
+        {
+             _mailService.SendEmailAsync(store.ContactEmail, "Đăng ký thành công!", body);
+        });
+
+        return Ok(true);
+    }
+    private string GenerateRandomString(int length)
+    {
+        Random _random = new();
+        string _chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+        return new string(Enumerable.Repeat(_chars, length)
+            .Select(s => s[_random.Next(s.Length)]).ToArray());
+    }
+}
+public class OptionFilterStore
+{
+    public int PageIndex { get; set; } = 1;
+    public int PageSize { get; set; } = 30;
+    public string? KeyWord { get; set; }
 }
 public class RegisterDto
 {
-    public string Username { get; set; }
-    public string Password { get; set; }
+    public string? Name { get; set; } = default!;
+    public string? Description { get; set; } = default!;
+    public string? Logo { get; set; } = default!;
+    public string? Location { get; set; } = default!;
+    public string? ContactPhone { get; set; } = default!;
+    public string? ContactEmail { get; set; } = default!;
+    public string? Facebook { get; set; } = default!;
+    public string? Instagram { get; set; } = default!;
+    public string? Twitter { get; set; } = default!;
+
 }

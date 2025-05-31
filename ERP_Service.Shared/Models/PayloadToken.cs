@@ -2,6 +2,7 @@
 
 public class PayloadToken
 {
+	public int? RoleId { get; set; }
 	public int UserLoginId { get; set; }
 	public string Username { get; set; }= null!;
 	public string FullName { get; set; }= null!;

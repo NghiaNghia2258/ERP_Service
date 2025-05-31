@@ -4,4 +4,5 @@ public class TokenLogin
 {
 	public string AccessToken { get; set; } = null!;
 	public string RefreshToken { get; set; }= null!;
+	public int? RoleId { get; set; }
 }

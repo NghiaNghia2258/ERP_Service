@@ -18,7 +18,7 @@ public class Store : EntityBase<Guid>, ISoftDelete
     public int? ReviewCount { get; set; }
     public int? Followers { get; set; }
     public DateTime JoinDate { get; set; } = DateTime.Now;
-    public bool? Verified { get; set; }
+    public bool? Verified { get; set; } = false;
     public string? Location { get; set; } = string.Empty;
     public string? ContactPhone { get; set; } = string.Empty;
     public string? ContactEmail { get; set; } = string.Empty;

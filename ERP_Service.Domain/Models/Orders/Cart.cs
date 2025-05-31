@@ -4,6 +4,8 @@ namespace ERP_Service.Domain.Models.Orders;
 
 public class Cart : EntityBase<int>
 {
+    public string? ShipingAddressId { get; set; }
+    public long? PaymentId { get; set; }
     public Guid CustomerId { get; set; }
     public bool HasOrder { get; set; } = false;
     public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();

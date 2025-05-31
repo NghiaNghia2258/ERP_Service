@@ -26,8 +26,9 @@ public static class DependencyInjection
 		builder.Services.AddSingleton<IEventBufferService, FileEventBufferService>();
 		builder.Services.AddSingleton<IVnPayService, VnPayService>();
 		builder.Services.AddSingleton<IVnpay, Vnpay>();
+        builder.Services.AddScoped<IMailService, MailService>();
 
-		//builder.Services.AddHostedService<EventLogProcessorService>();
+        //builder.Services.AddHostedService<EventLogProcessorService>();
         //builder.Services.AddScoped<ICacheService, RedisCacheService>();
         builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 	}
