@@ -7,6 +7,7 @@ using ERP_Service.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
+using System.Linq;
 using VNPAY.NET;
 using VNPAY.NET.Enums;
 using VNPAY.NET.Models;
@@ -45,10 +46,10 @@ public class PaymentController: ControllerBase
                 Money = money,
                 Description = description,
                 IpAddress = ipAddress,
-                BankCode = BankCode.ANY, // Tùy chọn. Mặc định là tất cả phương thức giao dịch
-                CreatedDate = DateTime.Now, // Tùy chọn. Mặc định là thời điểm hiện tại
-                Currency = Currency.VND, // Tùy chọn. Mặc định là VND (Việt Nam đồng)
-                Language = DisplayLanguage.Vietnamese // Tùy chọn. Mặc định là tiếng Việt
+                BankCode = BankCode.ANY, 
+                CreatedDate = DateTime.Now,
+                Currency = Currency.VND, 
+                Language = DisplayLanguage.Vietnamese 
             };
             PayloadToken token = _authoziService.PayloadToken;
             var cart = _dbContext.Carts.FirstOrDefault(x => !x.HasOrder && x.CustomerId == token.CustomerId);
@@ -64,6 +65,54 @@ public class PaymentController: ControllerBase
             return BadRequest(ex.Message);
         }
     }
+
+    [HttpGet("cod")]
+    public async Task<IActionResult> COD(string shippingId)
+    {
+        PayloadToken token = _authoziService.PayloadToken;
+        var cart = await _dbContext.Carts
+            .Where(x => !x.HasOrder && x.CustomerId == token.CustomerId).FirstOrDefaultAsync();
+        var cartItems = _dbContext.CartItem.Where(x => x.CartId == cart.Id && x.StoreId != null).GroupBy(x => x.StoreId).ToDictionary(g => g.Key, g => g.ToList());
+        var shipping = _dbContext.ShippingAddresses.FirstOrDefault(x => x.Id == shippingId);
+        foreach (var cartItem in cartItems)
+        {
+            Guid? key = cartItem.Key;
+            List<CartItem> values = cartItem.Value;
+            var storeName = _dbContext.Stores.Where(x => x.Id == key).Select(x => x.Name).FirstOrDefault();
+
+            var newOrder = new Order()
+            {
+                StoreName = storeName,
+                StoreId = key ?? new Guid(),
+                Code = key.ToString(),
+                CustomerName = shipping.FullName,
+                CustomerPhone = shipping.PhoneNumber,
+                ShippingAddressId = cart.ShipingAddressId,
+                CreatedAt = DateTime.Now,
+                CreatedBy = "COD",
+                CreatedName = "COD",
+                CustomerId = cart.CustomerId,
+                PaymentStatus = StatusOrder.Pending,
+                OrderItems = new List<OrderItem>()
+            };
+            foreach (var item in values)
+            {
+                newOrder.OrderItems.Add(new OrderItem
+                {
+                    ImageUrl = item.ImageUrl,
+                    ProductVariantId = item.ProductVariantId,
+                    Quantity = item.Quantity,
+                    UnitPrice = item.UnitPrice,
+                    Version = item.Version,
+                });
+            }
+            _dbContext.Orders.Add(newOrder);
+        }
+        cart.HasOrder = true;
+        _dbContext.SaveChanges();
+        return Ok(true);
+    }
+
     [HttpGet("Callback")]
     public ActionResult<PaymentResult> Callback()
     {
@@ -77,6 +126,7 @@ public class PaymentController: ControllerBase
                 {
                     var cart = _dbContext.Carts.FirstOrDefault(x => x.PaymentId == paymentResult.PaymentId);
                     var cartItems = _dbContext.CartItem.Where(x => x.CartId == cart.Id && x.StoreId != null).GroupBy(x => x.StoreId).ToDictionary(g => g.Key, g => g.ToList());
+                    var shipping = _dbContext.ShippingAddresses.FirstOrDefault(x => x.Id == cart.ShipingAddressId);
 
                     foreach (var cartItem in cartItems)
                     {
@@ -87,6 +137,8 @@ public class PaymentController: ControllerBase
                         {
                             StoreId = key ?? new Guid(),
                             Code = key.ToString(),
+                            CustomerName = shipping.FullName,
+                            CustomerPhone = shipping.PhoneNumber,
                             ShippingAddressId = cart.ShipingAddressId,
                             CreatedAt = DateTime.Now,
                             CreatedBy = "VNPay",

@@ -109,6 +109,31 @@ public class StoreController(
             Policies = JsonConvert.DeserializeObject<List<StorePolicyDto>>(store.Policies ??"[]"),
         }));
     }
+    [HttpGet("store-info-product/{id}")]
+    public async Task<IActionResult> GetStoreInfoByProductId(int id)
+    {
+        var data = await _dbContext.Products
+            .Include(s => s.Store)
+            .Where(s => s.Id == id)
+            .Select(x => new StoreDto
+            {
+                Id = x.Store.Id.ToString(),
+                Name = x.Store.Name,
+                Description = x.Store.Description,
+                Logo = x.Store.Logo,
+                CoverImage = x.Store.CoverImage,
+                Location = x.Store.Location,
+                Rating = 4.7,
+                Followers = 23,
+                ReviewCount = 12,
+                Verified = x.Store.Verified,
+            }).FirstOrDefaultAsync();
+            ;
+
+
+        return Ok(new ApiSuccessResult<StoreDto>(data));
+    }
+
     [HttpPut("update")]
     public async Task<IActionResult> Update([FromBody] UpdateStoreDto model)
     {

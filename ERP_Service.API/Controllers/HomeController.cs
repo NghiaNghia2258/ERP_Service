@@ -125,6 +125,49 @@ public class HomeController(AppDbContext _dbContext, IAuthoziService _authoziSer
             avgRating = query.Average(x => x.Rating)
         });
     }
+
+    [HttpGet("get-orders")]
+    public async Task<ActionResult<object>> GetAll([FromQuery] RequestGetAllOrders? options)
+    {
+        PayloadToken token = _authoziService.PayloadToken;
+
+        var query = _dbContext.Orders
+            .AsNoTracking();
+
+        if(token.RoleId == 3)
+        {
+            query = query.Where(x => x.Id == token.StoreId);
+        }
+        if (!string.IsNullOrWhiteSpace(options?.Keyword))
+        {
+            var keyword = options.Keyword.Trim().ToLower();
+            query = query.Where(o =>
+                o.Code.ToLower().Contains(keyword) ||
+                (o.CustomerName != null && o.CustomerName.ToLower().Contains(keyword)) ||
+                (o.CustomerPhone != null && o.CustomerPhone.ToLower().Contains(keyword)));
+        }
+
+        int totalRows = await query.CountAsync();
+
+        var items = await query
+            .Skip((options!.PageIndex - 1) * options.PageSize)
+            .Take(options.PageSize)
+            .Select(o => new ResponseGetAllOrders
+            {
+                Id = o.Id,
+                Code = o.Code,
+                CustomerName = o.CustomerName,
+                CustomerPhone = o.CustomerPhone,
+                TotalPrice = o.TotalPrice,
+                DiscountValue = o.DiscountValue,
+                PaymentStatus = o.PaymentStatus,
+                CreatedAt = o.CreatedAt
+            })
+            .ToListAsync();
+
+        return Ok(new { items, totalRows });
+    }
+
     [HttpGet("get-recommend")]
     public async Task<IActionResult> GetRecommendedProductIds()
     {
@@ -254,4 +297,21 @@ public class OptionFilterReview
     public int PageIndex { get; set; } = 1;
     public int PageSize { get; set; } = 30;
     public int ProductId { get; set; }
+}
+public class ResponseGetAllOrders
+{
+    public Guid Id { get; set; }
+    public string Code { get; set; } = null!;
+    public string? CustomerName { get; set; }
+    public string? CustomerPhone { get; set; }
+    public double TotalPrice { get; set; }
+    public double? DiscountValue { get; set; }
+    public int PaymentStatus { get; set; }
+    public DateTime CreatedAt { get; set; }
+}
+public class RequestGetAllOrders
+{
+    public string? Keyword { get; set; }
+    public int PageIndex { get; set; } = 1;
+    public int PageSize { get; set; } = 10;
 }

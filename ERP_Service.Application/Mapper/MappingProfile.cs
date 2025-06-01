@@ -116,7 +116,6 @@ public class MappingProfile : Profile
 
 		CreateMap<Order, GetByIdOrderDto>().ReverseMap();
 		CreateMap<UpdateOrderDto, Order>();
-		CreateMap<OrderItem, OrderItemDto>().ReverseMap();
 		CreateMap<CreateOrderItemDto, OrderItem>();
 		CreateMap<Voucher, VoucherDto>().ReverseMap();
 		CreateMap<Order, GetAllOrderDto>();

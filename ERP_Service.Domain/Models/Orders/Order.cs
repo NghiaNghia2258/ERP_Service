@@ -12,7 +12,8 @@ public partial class Order : EntityBase<Guid>, IAuditableEntity
 	public string? Name { get; set; }
 	public Guid? CustomerId { get; set; }
 	public Guid StoreId { get; set; }
-	public string? CustomerName { get; set; }
+	public string? StoreName { get; set; }
+    public string? CustomerName { get; set; }
 	public string? CustomerPhone { get; set; }
 	public string? CustomerNote { get; set; }
 	public int PaymentStatus { get; set; } = 1!;
