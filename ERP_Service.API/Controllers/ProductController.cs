@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Azure.Core;
 using ERP_Service.Application.Comands.Products;
 using ERP_Service.Application.Mapper.Model.Products;
 using ERP_Service.Application.Queries.Products;
@@ -7,11 +6,14 @@ using ERP_Service.Application.Services.Interfaces;
 using ERP_Service.Domain.Abstractions;
 using ERP_Service.Domain.ApiResult;
 using ERP_Service.Domain.Const;
+using ERP_Service.Domain.Models;
 using ERP_Service.Domain.PagingRequest;
 using ERP_Service.Infrastructure;
+using ERP_Service.Shared.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 namespace ERP_Service.API.Controllers
 {
@@ -24,21 +26,40 @@ namespace ERP_Service.API.Controllers
 		private readonly AppDbContext _dbContext;
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IMapper _mapper;
+		private readonly IEventBufferService _eventBufferService;
 
 
-        public ProductController(IAuthoziService authoziService, IMediator mediator, AppDbContext dbContext, IUnitOfWork unitOfWork, IMapper mapper)
-		{
-			_authoziService = authoziService;
-			_mediator = mediator;
-			_dbContext = dbContext;
-			_unitOfWork = unitOfWork;
-			_mapper = mapper;
-		}
-		[HttpGet("{id:int}")]
+        public ProductController(IAuthoziService authoziService, IMediator mediator, AppDbContext dbContext, IUnitOfWork unitOfWork, IMapper mapper, IEventBufferService eventBufferService)
+        {
+            _authoziService = authoziService;
+            _mediator = mediator;
+            _dbContext = dbContext;
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
+            _eventBufferService = eventBufferService;
+        }
+        [HttpGet("{id:int}")]
 		public async Task<IActionResult> GetById(int id)
 		{
-			await _authoziService.IsAuthozi(role: RoleNameConst.SELECT_CUSTOMER);
+            PayloadToken token = _authoziService.PayloadToken;
 
+            await _authoziService.IsAuthozi(role: RoleNameConst.SELECT_CUSTOMER);
+
+			if(_dbContext.Customers.Any(x => x.Id == token.CustomerId))
+			{
+                var userEvent = new UserEvent
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = token.CustomerId,
+                    ProductId = id,
+                    EventTime = DateTime.UtcNow,
+                    Weight = EventWeights.ProductView.Weight,
+                    EventName = EventWeights.ProductView.Name
+                };
+                var eventJson = JsonSerializer.Serialize(userEvent);
+
+                await _eventBufferService.AppendEventAsync(eventJson);
+            }
 			var result = await _mediator.Send(new GetByIdProductQuery(id));
 			return Ok(result);
 		}
