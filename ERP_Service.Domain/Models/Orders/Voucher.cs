@@ -1,10 +1,10 @@
 ﻿using ERP_Service.Domain.Abstractions;
-using ERP_Service.Domain.Abstractions.Model;
 using ERP_Service.Domain.Exceptions.Orders;
+using ERP_Service.Domain.Models.Stores;
 
 namespace ERP_Service.Domain.Models.Orders;
 
-public class Voucher: EntityBase<Guid>, IAuditableEntity
+public class Voucher: EntityBase<Guid>
 {
 	public string VoucherCode { get; set; } = null!;
 	public string? Title { get; set; }
@@ -22,16 +22,8 @@ public class Voucher: EntityBase<Guid>, IAuditableEntity
 	public DateTime StartDate { get; set; }
 	public DateTime ExpirationDate { get; set; }
 
-	public DateTime CreatedAt { get; set; } = DateTime.Now;
-	public string CreatedBy { get; set; } = null!;
-	public string CreatedName { get; set; } = null!;
-	public DateTime? UpdatedAt { get; set; }
-	public string? UpdatedBy { get; set; }
-	public string? UpdatedName { get; set; }
-	public bool IsDeleted { get; set; } = false;
-	public DateTime? DeletedAt { get; set; }
-	public string? DeletedBy { get; set; }
-	public string? DeletedName { get; set; }
+	public Guid? StoreId { get; set; }
+	public Store? Store { get;set; }
 
 	public void Use()
 	{

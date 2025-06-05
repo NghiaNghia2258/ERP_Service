@@ -10,7 +10,7 @@ public class VariantCreate
     public int Id { get; set; }
     public string PropertyValue1 { get; set; } = string.Empty;
     public string PropertyValue2 { get; set; } = string.Empty;
-    public decimal Price { get; set; }
+    public double Price { get; set; }
     public int Stock { get; set; }
     public bool IsActivate { get; set; }
     public string? Image { get; set; }
@@ -23,7 +23,7 @@ public class CreateProductDto
     public string Name { get; set; } = string.Empty;
     public int? CategoryId { get; set; }
     public int? BrandId { get; set; }
-    public decimal Price { get; set; }
+    public double Price { get; set; }
     public decimal OriginalPrice { get; set; }
     public string? Description { get; set; }
     public bool IsPhysicalProduct { get; set; }

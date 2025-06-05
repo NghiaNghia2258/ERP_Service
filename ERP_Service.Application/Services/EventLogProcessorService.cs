@@ -11,7 +11,7 @@ public class EventLogProcessorService(
     IServiceProvider _serviceProvider
     ) : BackgroundService
 {
-    private readonly TimeSpan _interval = TimeSpan.FromSeconds(5);
+    private readonly TimeSpan _interval = TimeSpan.FromMinutes(5);
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -26,28 +26,47 @@ public class EventLogProcessorService(
     private async Task ProcessEventLogs()
     {
         string logFolder = Path.Combine(Directory.GetCurrentDirectory(), "Logs", "EventBuffers");
-        string todayLogFile = Path.Combine(logFolder, $"events_buffer_{DateTime.UtcNow:yyyyMMdd}.log");
 
-        if (!File.Exists(todayLogFile))
+        if (!Directory.Exists(logFolder))
         {
-            Console.WriteLine("No log file to process.");
+            Console.WriteLine("No log folder found.");
             return;
         }
 
-        var lines = File.ReadAllLines(todayLogFile);
+        var logFiles = Directory.GetFiles(logFolder, "*.log");
+        if (logFiles.Length == 0)
+        {
+            Console.WriteLine("No log files to process.");
+            return;
+        }
+
         var events = new List<UserEvent>();
 
-        foreach (var line in lines)
+        foreach (var file in logFiles)
         {
             try
             {
-                var userEvent = JsonSerializer.Deserialize<UserEvent>(line);
-                if (userEvent != null)
-                    events.Add(userEvent);
+                var lines = await File.ReadAllLinesAsync(file);
+                foreach (var line in lines)
+                {
+                    try
+                    {
+                        var userEvent = JsonSerializer.Deserialize<UserEvent>(line);
+                        if (userEvent != null)
+                            events.Add(userEvent);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error parsing line in file {file}: {ex.Message}");
+                    }
+                }
+
+                // Delete file after processing
+                File.Delete(file);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error parsing line: {ex.Message}");
+                Console.WriteLine($"Error reading file {file}: {ex.Message}");
             }
         }
 
@@ -59,7 +78,5 @@ public class EventLogProcessorService(
             await userEventRepository.AddRange(events);
             await userEventRepository.UpdateUserProductScoresAsync();
         }
-
-        File.Delete(todayLogFile);
     }
 }

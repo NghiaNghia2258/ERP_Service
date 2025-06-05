@@ -4,6 +4,7 @@ using ERP_Service.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ERP_Service.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250601094744_E4")]
+    partial class E4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -743,9 +746,6 @@ namespace ERP_Service.Infrastructure.Migrations
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("StoreId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
 
@@ -763,8 +763,6 @@ namespace ERP_Service.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("StoreId");
 
                     b.ToTable("Vouchers");
                 });
@@ -1970,16 +1968,6 @@ namespace ERP_Service.Infrastructure.Migrations
                     b.Navigation("ProductVariant");
 
                     b.Navigation("VolumeDiscount");
-                });
-
-            modelBuilder.Entity("ERP_Service.Domain.Models.Orders.Voucher", b =>
-                {
-                    b.HasOne("ERP_Service.Domain.Models.Stores.Store", "Store")
-                        .WithMany()
-                        .HasForeignKey("StoreId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("Store");
                 });
 
             modelBuilder.Entity("ERP_Service.Domain.Models.Products.Product", b =>

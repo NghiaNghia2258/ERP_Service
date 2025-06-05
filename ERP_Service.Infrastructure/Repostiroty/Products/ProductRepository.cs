@@ -59,48 +59,6 @@ public class ProductRepository : RepositoryBase<Product, int>, IProductRepositor
 	{
 		return await _dbContext.Products
 			.Include(x => x.ProductVariants)
-			.Select(x => 
-				new Product()
-				{
-                    Id = x.Id,
-                    Name = x.Name,
-                    NameEn = x.NameEn,
-					Price = x.Price,
-					OriginalPrice = x.OriginalPrice,
-                    Description = x.Description,
-                    MainImageUrl = x.MainImageUrl,
-                    TotalInventory = x.TotalInventory,
-                    CategoryId = x.CategoryId,
-                    CategoryName = x.CategoryName,
-                    BrandId = x.BrandId,
-                    BrandName = x.BrandName,
-                    IsPhysicalProduct = x.IsPhysicalProduct,
-                    Weight = x.Weight,
-                    UnitWeight = x.UnitWeight,
-                    PropertyName1 = x.PropertyName1,
-                    PropertyName2 = x.PropertyName2,
-                    Version = x.Version,
-					PropertyValue1 = x.PropertyValue1,
-					PropertyValue2 = x.PropertyValue2,
-					Specifications = x.Specifications,
-					StoreId = x.StoreId,
-					CreatedAt = x.CreatedAt,
-					CreatedBy = x.CreatedBy,
-					CreatedName = x.CreatedName,
-					ProductVariants = x.ProductVariants.Where(x => x.IsActivate).Select(y => new ProductVariant()
-					{
-						Id = y.Id,
-						PropertyValue1 = y.PropertyValue1,
-						PropertyValue2 = y.PropertyValue2,
-						ImageUrl = y.ImageUrl,
-						Price = y.Price,
-						Inventory = y.Inventory,
-						Version = y.Version,
-						IsActivate = y.IsActivate,
-					}).ToList(),
-					ImageUrls = x.ImageUrls,
-				}
-			)
 			.FirstOrDefaultAsync(x => x.Id == id) ?? new Product();
 	}
 
