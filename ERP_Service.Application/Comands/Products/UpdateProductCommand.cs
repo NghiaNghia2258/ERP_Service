@@ -65,10 +65,26 @@ public class UpdateProductCommandHandler : CommandHandlerBase, IRequestHandler<U
             && variantDto.PropertyValue2 == x.PropertyValue2
             ).FirstOrDefaultAsync();
 
-            variant.Price = variantDto.Price;
-            variant.ImageUrl = variantDto.Image;
-            variant.IsActivate = variantDto.IsActivate;
-            variant.Inventory = variantDto.Stock;
+            if(variant == null)
+            {
+                getById.ProductVariants.Add(new ProductVariant
+                {
+                    Price = variantDto.Price,
+                    IsActivate = variantDto.IsActivate,
+                    Inventory = variantDto.Stock,
+                    PropertyValue1 = variantDto.PropertyValue1,
+                    PropertyValue2 = variantDto.PropertyValue2,
+                    CreatedName = "admin",
+                    CreatedBy = "admin",
+                });      
+            }
+            else
+            {
+                variant.Price = variantDto.Price;
+                variant.ImageUrl = variantDto.Image;
+                variant.IsActivate = variantDto.IsActivate;
+                variant.Inventory = variantDto.Stock;
+            }
         }
         await context.SaveChangesAsync();
 
