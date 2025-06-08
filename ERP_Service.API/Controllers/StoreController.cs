@@ -210,9 +210,12 @@ public class StoreController(
         store.Verified = true;
         store.UserLogin.Password = GenerateRandomString(6);
         await _dbContext.SaveChangesAsync();
-        string body = $@"
+
+        _ = Task.Run(() =>
+        {
+            string body = $@"
                 <h2>Xin chào {store.Name},</h2>
-                <p>Cửa hàng của bạn đã được đăng ký thành công trên hệ thống ERP.</p>
+                <p>Cửa hàng của bạn đã được đăng ký thành công trên hệ thống.</p>
                 <p><b>Thông tin đăng nhập:</b></p>
                 <ul>
                     <li><b>Email:</b> {store.ContactEmail}</li>
@@ -220,11 +223,8 @@ public class StoreController(
                 </ul>
                 <p>Hãy đăng nhập và cập nhật thông tin cửa hàng của bạn nhé!</p>
                 <hr />
-                <p>Trân trọng,<br/>Đội ngũ hỗ trợ ERP</p>";
-
-        _ = Task.Run(() =>
-        {
-             _mailService.SendEmailAsync(store.ContactEmail, "Đăng ký thành công!", body);
+                <p>Trân trọng,<br/>Liên hệ hỗ trợ: 0342534443</p>";
+            _mailService.SendEmailAsync(store.ContactEmail, "Đăng ký thành công!", body);
         });
 
         return Ok(true);

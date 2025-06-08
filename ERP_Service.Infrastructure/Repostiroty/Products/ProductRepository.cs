@@ -31,9 +31,6 @@ public class ProductRepository : RepositoryBase<Product, int>, IProductRepositor
 	public async Task<IEnumerable<Product>> GetAll(OptionFilterProduct option)
 	{
 		var query = _dbContext.Products
-			.Include(p => p.Category)
-			.Include(p => p.ProductRates)
-			.Include(p => p.ProductVariants)
 			.Where(x => x.StoreId == _payloadToken.StoreId)
             .Select(q => new Product
 			{
@@ -45,7 +42,6 @@ public class ProductRepository : RepositoryBase<Product, int>, IProductRepositor
 				PropertyName1 = q.PropertyName1,
 				PropertyName2 = q.PropertyName2,
 				ProductRates = q.ProductRates,
-				ProductVariants = q.ProductVariants.Where(x => x.IsActivate).ToList()
 			});
 
 		TotalRecords.PRODUCT = await query.CountAsync();

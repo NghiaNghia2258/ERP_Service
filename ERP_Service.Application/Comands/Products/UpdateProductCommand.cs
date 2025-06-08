@@ -41,7 +41,7 @@ public class UpdateProductCommandHandler : CommandHandlerBase, IRequestHandler<U
         getById.Name = request.Model.Name;
         getById.NameEn = request.Model.NameEn;
         getById.Description = request.Model.Description;
-        getById.MainImageUrl = request.Model.MainImageUrl;
+        getById.MainImageUrl = request.Model.ExistingUrls.FirstOrDefault();
         getById.ImageUrls = ERP_Service.Shared.Utilities.JsonHelper.ConvertToJsonString(request.Model.ExistingUrls);
         getById.TotalInventory = request.Model.TotalInventory ?? 0;
         getById.CategoryId = request.Model.CategoryId;
@@ -58,26 +58,17 @@ public class UpdateProductCommandHandler : CommandHandlerBase, IRequestHandler<U
         getById.PropertyValue2 = string.Join(",", request.Model.PropertyValue2);
         getById.Specifications = ERP_Service.Shared.Utilities.JsonHelper.ConvertToJsonString(request.Model.Specifications);
 
-        IEnumerable<ProductVariant> variants = await context.ProductVariants.Where(x => x.ProductId == getById.Id).ToListAsync();
-        context.RemoveRange(variants);
         foreach (var variantDto in request.Model.ProductVariants)
         {
-            ProductVariant newVariant = new ProductVariant
-            {
-                ProductId = getById.Id,
-                PropertyValue1 = variantDto.PropertyValue1,
-                PropertyValue2 = variantDto.PropertyValue2,
-                Price = variantDto.Price,
-                ImageUrl = variantDto.Image,
-                IsActivate = variantDto.IsActivate,
-                Inventory = variantDto.Stock,
-                CreatedAt = getById.CreatedAt,
-                CreatedBy = getById.CreatedBy,
-                CreatedName = getById.CreatedName,
-            };
+            ProductVariant? variant = await context.ProductVariants.Where(x => x.ProductId == getById.Id
+            && variantDto.PropertyValue1 == x.PropertyValue1
+            && variantDto.PropertyValue2 == x.PropertyValue2
+            ).FirstOrDefaultAsync();
 
-           getById.ProductVariants.Add(newVariant);
-
+            variant.Price = variantDto.Price;
+            variant.ImageUrl = variantDto.Image;
+            variant.IsActivate = variantDto.IsActivate;
+            variant.Inventory = variantDto.Stock;
         }
         await context.SaveChangesAsync();
 

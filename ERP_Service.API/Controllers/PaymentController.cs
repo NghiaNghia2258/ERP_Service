@@ -56,6 +56,7 @@ public class PaymentController: ControllerBase
             cart.ShipingAddressId = shippingId;
             cart.PaymentId = request.PaymentId;
             _dbContext.SaveChanges();
+
             var paymentUrl = _vnpay.GetPaymentUrl(request);
 
             return Created(paymentUrl, paymentUrl);
@@ -97,6 +98,15 @@ public class PaymentController: ControllerBase
             };
             foreach (var item in values)
             {
+                var variant = await _dbContext.ProductVariants.FirstOrDefaultAsync(x => x.Id == item.ProductVariantId);
+
+                if (variant?.Inventory < item.Quantity)
+                {
+                    throw new Exception("Tồn kho không đủ");
+                }
+                variant.Inventory -= item.Quantity;
+                var prod = await _dbContext.Products.FirstOrDefaultAsync(x => x.Id == variant.ProductId);
+                prod.SellCount++;
                 newOrder.OrderItems.Add(new OrderItem
                 {
                     ImageUrl = item.ImageUrl,
@@ -106,6 +116,7 @@ public class PaymentController: ControllerBase
                     Version = item.Version,
                 });
             }
+            newOrder.TotalPrice = newOrder.OrderItems.Sum(x => x.Quantity * x.UnitPrice);
             _dbContext.Orders.Add(newOrder);
         }
         cart.HasOrder = true;
@@ -114,7 +125,7 @@ public class PaymentController: ControllerBase
     }
 
     [HttpGet("Callback")]
-    public ActionResult<PaymentResult> Callback()
+    public async Task<IActionResult> Callback()
     {
         if (Request.QueryString.HasValue)
         {
@@ -149,27 +160,37 @@ public class PaymentController: ControllerBase
                         };
                         foreach (var item in values)
                         {
+                            var variant = await _dbContext.ProductVariants.FirstOrDefaultAsync(x => x.Id == item.ProductVariantId);
+
+                            if (variant?.Inventory < item.Quantity)
+                            {
+                                throw new Exception("Tồn kho không đủ");
+                            }
+                            variant.Inventory -= item.Quantity;
+                            var prod = await _dbContext.Products.FirstOrDefaultAsync(x => x.Id == variant.ProductId);
+                            prod.SellCount++;
                             newOrder.OrderItems.Add(new OrderItem
                             {
                                 ImageUrl = item.ImageUrl,
                                 ProductVariantId = item.ProductVariantId,
-                                Quantity = item.Quantity, 
+                                Quantity = item.Quantity,
                                 UnitPrice = item.UnitPrice,
                                 Version = item.Version,
-                            });    
+                            });
+
+
                         }
-                       _dbContext.Orders.Add(newOrder);
+                        newOrder.TotalPrice = newOrder.OrderItems.Sum(x => x.Quantity * x.UnitPrice);
+                        _dbContext.Orders.Add(newOrder);
                     }
                     cart.HasOrder = true;
                     _dbContext.SaveChanges();
-                    return Ok(paymentResult);
                 }
-
-                return BadRequest(paymentResult);
+                return Redirect($"http://localhost:5173/home");
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return Redirect($"http://localhost:5173/home");
             }
         }
 

@@ -31,6 +31,7 @@ public static class JwtTokenHelper
 		claims.Add(new Claim("CustomerId", payloadToken.CustomerId.ToString()));
 		claims.Add(new Claim("StoreId", payloadToken.StoreId.ToString()));
 		claims.Add(new Claim("EmployeeId", payloadToken.EmployeeId.ToString()));
+		claims.Add(new Claim("RoleId", payloadToken.RoleId.ToString()));
         foreach (var item in payloadToken.Roles)
 		{
 			if (!string.IsNullOrEmpty(item.Name))
@@ -89,6 +90,7 @@ public static class JwtTokenHelper
             CustomerId = customerId,
             StoreId = storeId,
             EmployeeId = employeeId,
+			RoleId = int.Parse(jwtToken.Claims.FirstOrDefault(c => c.Type == "RoleId")?.Value),
         };
 
 		return payloadToken;

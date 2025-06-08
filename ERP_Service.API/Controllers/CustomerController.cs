@@ -284,13 +284,13 @@ namespace ERP_Service.API.Controllers
             await _eventBufferService.AppendEventAsync(eventJson);
             return Ok(new ApiSuccessResult<bool>(true));
         }
-        [HttpPost("remove-from-cart")]
+        [HttpGet("remove-from-cart/{productVariantId}")]
         public async Task<IActionResult> RemoveFromCart(int productVariantId)
         {
             PayloadToken token = _authoziService.PayloadToken;
             var cart = await _dbContext.Carts.Include(x => x.CartItems).FirstOrDefaultAsync(x => !x.HasOrder && x.CustomerId == token.CustomerId);
             if (cart is null) { throw new Exception("Không có cart hợp lệ"); }
-            var cartItem = cart.CartItems.FirstOrDefault(x => x.ProductVariantId == productVariantId);
+            var cartItem = cart.CartItems.FirstOrDefault(x => x.Id == productVariantId);
             if (cartItem is null) { throw new Exception("Không có cartItem hợp lệ"); }
             _dbContext.CartItem.Remove(cartItem);
             await _dbContext.SaveChangesAsync();

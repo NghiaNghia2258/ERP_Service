@@ -55,8 +55,6 @@ public class HomeController(AppDbContext _dbContext, IAuthoziService _authoziSer
 
         var query = _dbContext.Products
         .Include(p => p.ProductRates)
-        .Include(p => p.Category)
-        .Include(p => p.Brand)
         .Where(x => (option.StoreId == null || x.StoreId == option.StoreId)
         && (option.keyWord == null || x.Name.Contains(option.keyWord))
         );
@@ -91,7 +89,7 @@ public class HomeController(AppDbContext _dbContext, IAuthoziService _authoziSer
             rating = p.Rate,
             reviewCount = p.RateCount,
             inStock = p.TotalInventory > 0,
-            isNew = p.CreatedAt >= DateTime.Now.AddDays(-30),
+            isNew = p.CreatedAt >= DateTime.Now.AddMinutes(-1),
             isBestSeller = p.SellCount >= averageSellCount,
             category = p.Category.Name,
             brand = p.Brand.Name,
@@ -132,11 +130,12 @@ public class HomeController(AppDbContext _dbContext, IAuthoziService _authoziSer
         PayloadToken token = _authoziService.PayloadToken;
 
         var query = _dbContext.Orders
+            .OrderByDescending(x => x.CreatedAt)
             .AsNoTracking();
 
         if(token.RoleId == 3)
         {
-            query = query.Where(x => x.Id == token.StoreId);
+            query = query.Where(x => x.StoreId == token.StoreId);
         }
         if (!string.IsNullOrWhiteSpace(options?.Keyword))
         {
