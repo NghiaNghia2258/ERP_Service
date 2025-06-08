@@ -7,14 +7,14 @@ using ERP_Service.Domain.ApiResult;
 using ERP_Service.Domain.Const;
 using ERP_Service.Domain.Models;
 using ERP_Service.Domain.Models.Orders;
-using ERP_Service.Domain.Models.Stores;
 using ERP_Service.Domain.PagingRequest;
 using ERP_Service.Infrastructure;
 using ERP_Service.Shared.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json;
+using Newtonsoft.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace ERP_Service.API.Controllers
 {
@@ -324,6 +324,7 @@ namespace ERP_Service.API.Controllers
                 .Select(x => new CartDto
                 {
                     Id = x.Id,
+                    Vouchers = JsonConvert.DeserializeObject<List<VoucherCartDto>>(x.Vouchers ?? "[]"),
                     CartItems = x.CartItems.Select(y => new CartItemDto
                     {
                         Id = y.Id,

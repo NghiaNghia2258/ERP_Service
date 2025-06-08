@@ -1,13 +1,12 @@
-﻿using ERP_Service.Application.Services.Interfaces;
-using ERP_Service.Application.Services.VNPay;
+﻿using ERP_Service.Application.Mapper.Model.Carts;
+using ERP_Service.Application.Services.Interfaces;
 using ERP_Service.Domain.Const;
 using ERP_Service.Domain.Models.Orders;
 using ERP_Service.Infrastructure;
 using ERP_Service.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json.Linq;
-using System.Linq;
+using Newtonsoft.Json;
 using VNPAY.NET;
 using VNPAY.NET.Enums;
 using VNPAY.NET.Models;
@@ -75,12 +74,14 @@ public class PaymentController: ControllerBase
             .Where(x => !x.HasOrder && x.CustomerId == token.CustomerId).FirstOrDefaultAsync();
         var cartItems = _dbContext.CartItem.Where(x => x.CartId == cart.Id && x.StoreId != null).GroupBy(x => x.StoreId).ToDictionary(g => g.Key, g => g.ToList());
         var shipping = _dbContext.ShippingAddresses.FirstOrDefault(x => x.Id == shippingId);
+        List<VoucherCartDto> vouchers = JsonConvert.DeserializeObject<List<VoucherCartDto>>(cart.Vouchers);
+
         foreach (var cartItem in cartItems)
         {
             Guid? key = cartItem.Key;
             List<CartItem> values = cartItem.Value;
             var storeName = _dbContext.Stores.Where(x => x.Id == key).Select(x => x.Name).FirstOrDefault();
-
+            VoucherCartDto voucher = vouchers.FirstOrDefault(x => x.ShopId == key);
             var newOrder = new Order()
             {
                 StoreName = storeName,
@@ -94,8 +95,13 @@ public class PaymentController: ControllerBase
                 CreatedName = "COD",
                 CustomerId = cart.CustomerId,
                 PaymentStatus = StatusOrder.Pending,
-                OrderItems = new List<OrderItem>()
+                OrderItems = new List<OrderItem>(),
+                VoucherCode = voucher?.Code,
+                VoucherId = voucher?.Id,
+                DiscountPercent = voucher?.DiscountPercent,
+                DiscountValue = voucher?.DiscountAmount,
             };
+
             foreach (var item in values)
             {
                 var variant = await _dbContext.ProductVariants.FirstOrDefaultAsync(x => x.Id == item.ProductVariantId);
@@ -138,11 +144,13 @@ public class PaymentController: ControllerBase
                     var cart = _dbContext.Carts.FirstOrDefault(x => x.PaymentId == paymentResult.PaymentId);
                     var cartItems = _dbContext.CartItem.Where(x => x.CartId == cart.Id && x.StoreId != null).GroupBy(x => x.StoreId).ToDictionary(g => g.Key, g => g.ToList());
                     var shipping = _dbContext.ShippingAddresses.FirstOrDefault(x => x.Id == cart.ShipingAddressId);
+                    List<VoucherCartDto> vouchers = JsonConvert.DeserializeObject<List<VoucherCartDto>>(cart.Vouchers);
 
                     foreach (var cartItem in cartItems)
                     {
                         Guid? key = cartItem.Key;
                         List<CartItem> values = cartItem.Value;
+                        VoucherCartDto voucher = vouchers.FirstOrDefault(x => x.ShopId == key);
 
                         var newOrder = new Order()
                         {
@@ -156,7 +164,11 @@ public class PaymentController: ControllerBase
                             CreatedName = "VNPay",
                             CustomerId = cart.CustomerId,
                             PaymentStatus = StatusOrder.Pending,
-                            OrderItems = new List<OrderItem>()
+                            OrderItems = new List<OrderItem>(),
+                            VoucherCode = voucher?.Code,
+                            VoucherId = voucher?.Id,
+                            DiscountPercent = voucher?.DiscountPercent,
+                            DiscountValue = voucher?.DiscountAmount,
                         };
                         foreach (var item in values)
                         {

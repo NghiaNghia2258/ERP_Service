@@ -4,6 +4,7 @@ public class CartDto
 {
     public int Id { get; set; }
     public List<CartItemDto> CartItems { get; set; }
+    public List<VoucherCartDto> Vouchers { get; set; }
 }
 public class CartItemDto
 {
@@ -17,4 +18,15 @@ public class CartItemDto
     public Guid? ShopId { get; set; }
     public string? ShopName { get; set; } = string.Empty;
     public string? ShopAvatarUrl { get; set; } 
+}
+public class VoucherCartDto
+{
+    public string Code { get; set; }
+    public Guid Id { get; set; }
+    public Guid? ShopId { get; set; }
+    public double? DiscountPercent { get; set; }
+    public double? DiscountValue { get; set; }
+    public double? MaxDiscountValue { get; set; }
+    public double? DiscountAmount { get; set; }
+    public string? Title { get; set; }
 }

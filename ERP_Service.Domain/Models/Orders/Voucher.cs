@@ -35,7 +35,7 @@ public class Voucher: EntityBase<Guid>
 		{
 			throw new UseVocherException("Chưa đến ngày sử dụng");
 		}
-		else if (ExpirationDate >= DateTime.Now)
+		else if (ExpirationDate < DateTime.Now)
 		{
 			throw new UseVocherException("Hết hạn sử dụng");
 		}

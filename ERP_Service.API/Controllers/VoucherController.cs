@@ -1,10 +1,13 @@
-﻿using ERP_Service.Application.Services.Interfaces;
+﻿using ERP_Service.Application.Mapper.Model.Carts;
+using ERP_Service.Application.Services.Interfaces;
 using ERP_Service.Domain.ApiResult;
 using ERP_Service.Domain.Models.Orders;
 using ERP_Service.Infrastructure;
 using ERP_Service.Shared.Models;
+using ERP_Service.Shared.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace ERP_Service.API.Controllers
 {
@@ -43,6 +46,51 @@ namespace ERP_Service.API.Controllers
                 return NotFound(new ApiResult(false, "Voucher không tồn tại", 404));
 
             return Ok(new ApiSuccessResult<Voucher>(voucher));
+        }
+        [HttpGet("use-voucher")]
+        public async Task<IActionResult> UseVoucher(string code, double discountAmount)
+        {
+            var voucher = await _dbContext.Vouchers.FirstOrDefaultAsync(x => x.VoucherCode == code);
+            if (voucher == null)
+                return NotFound(new ApiResult(false, "Voucher không tồn tại", 404));
+            voucher.Use();
+            PayloadToken token = _authoziService.PayloadToken;
+            var cart = await _dbContext.Carts
+                .FirstOrDefaultAsync(x => !x.HasOrder && x.CustomerId == token.CustomerId);
+
+            List<VoucherCartDto> vouchers = JsonConvert.DeserializeObject<List<VoucherCartDto>>(cart.Vouchers ?? "[]");
+            vouchers.Add(new VoucherCartDto
+            {
+                Code = code,
+                Id = voucher.Id,
+                Title = voucher.Title,
+                ShopId = voucher.StoreId,
+                DiscountPercent = voucher.DiscountPercent,
+                DiscountValue = voucher.DiscountValue,
+                MaxDiscountValue = voucher.MaxDiscountValue,
+                DiscountAmount = discountAmount
+            });
+            cart.Vouchers = JsonHelper.ConvertToJsonString(vouchers);
+            await _dbContext.SaveChangesAsync();
+            return Ok(new ApiSuccessResult<Voucher>(voucher));
+        }
+        [HttpGet("remove-voucher/{code}")]
+        public async Task<IActionResult> RemoveVoucher(string code)
+        {
+            var voucher = await _dbContext.Vouchers.FirstOrDefaultAsync(x => x.VoucherCode == code);
+            if (voucher == null)
+                return NotFound(new ApiResult(false, "Voucher không tồn tại", 404));
+            PayloadToken token = _authoziService.PayloadToken;
+            var cart = await _dbContext.Carts
+                .FirstOrDefaultAsync(x => !x.HasOrder && x.CustomerId == token.CustomerId);
+
+            List<VoucherCartDto> vouchers = JsonConvert.DeserializeObject<List<VoucherCartDto>>(cart.Vouchers);
+            VoucherCartDto voucherRemove = vouchers.FirstOrDefault(x => x.Code == code);
+            vouchers.Remove(voucherRemove);
+
+            cart.Vouchers = JsonHelper.ConvertToJsonString(vouchers);
+            await _dbContext.SaveChangesAsync();
+            return Ok(new ApiSuccessResult<bool>(true));
         }
 
         [HttpPut("{id}")]
