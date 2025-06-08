@@ -1,12 +1,15 @@
 ﻿using ERP_Service.Application.Mapper.Model.Carts;
 using ERP_Service.Application.Services.Interfaces;
 using ERP_Service.Domain.Const;
+using ERP_Service.Domain.Models;
 using ERP_Service.Domain.Models.Orders;
 using ERP_Service.Infrastructure;
 using ERP_Service.Shared.Models;
+using ERP_Service.Shared.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using VNPAY.NET;
 using VNPAY.NET.Enums;
 using VNPAY.NET.Models;
@@ -22,8 +25,9 @@ public class PaymentController: ControllerBase
     private readonly IConfiguration _configuration;
     private readonly AppDbContext _dbContext;
     private readonly IAuthoziService _authoziService;
+    private readonly IEventBufferService _eventBufferService;
 
-    public PaymentController(IVnpay vnPayservice, IConfiguration configuration, AppDbContext _dbContext, IAuthoziService _authoziService)
+    public PaymentController(IVnpay vnPayservice, IConfiguration configuration, AppDbContext _dbContext, IAuthoziService _authoziService, IEventBufferService eventBufferService)
     {
         _vnpay = vnPayservice;
         _configuration = configuration;
@@ -31,7 +35,9 @@ public class PaymentController: ControllerBase
         this._authoziService = _authoziService;
 
         _vnpay.Initialize(_configuration["Vnpay:TmnCode"], _configuration["Vnpay:HashSecret"], _configuration["Vnpay:BaseUrl"], _configuration["Vnpay:CallbackUrl"]);
+        _eventBufferService = eventBufferService;
     }
+
     [HttpGet("CreatePaymentUrl")]
     public ActionResult<string> CreatePaymentUrl(double money, string description, string shippingId)
     {
@@ -121,6 +127,22 @@ public class PaymentController: ControllerBase
                     UnitPrice = item.UnitPrice,
                     Version = item.Version,
                 });
+                var productId = await _dbContext.ProductVariants
+                    .Where(x => x.Id == item.ProductVariantId)
+                    .Select(x => x.ProductId)
+                    .FirstOrDefaultAsync();
+                var userEvent = new UserEvent
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = token.CustomerId,
+                    ProductId = productId,
+                    EventTime = DateTime.UtcNow,
+                    Weight = EventWeights.Purchase.Weight,
+                    EventName = EventWeights.Purchase.Name,
+                };
+                var eventJson = JsonHelper.ConvertToJsonString(userEvent);
+
+                await _eventBufferService.AppendEventAsync(eventJson);
             }
             newOrder.TotalPrice = newOrder.OrderItems.Sum(x => x.Quantity * x.UnitPrice);
             _dbContext.Orders.Add(newOrder);
@@ -141,6 +163,7 @@ public class PaymentController: ControllerBase
 
                 if (paymentResult.IsSuccess)
                 {
+                    PayloadToken token = _authoziService.PayloadToken;
                     var cart = _dbContext.Carts.FirstOrDefault(x => x.PaymentId == paymentResult.PaymentId);
                     var cartItems = _dbContext.CartItem.Where(x => x.CartId == cart.Id && x.StoreId != null).GroupBy(x => x.StoreId).ToDictionary(g => g.Key, g => g.ToList());
                     var shipping = _dbContext.ShippingAddresses.FirstOrDefault(x => x.Id == cart.ShipingAddressId);
@@ -189,7 +212,22 @@ public class PaymentController: ControllerBase
                                 UnitPrice = item.UnitPrice,
                                 Version = item.Version,
                             });
+                            var productId = await _dbContext.ProductVariants
+                              .Where(x => x.Id == item.ProductVariantId)
+                              .Select(x => x.ProductId)
+                              .FirstOrDefaultAsync();
+                            var userEvent = new UserEvent
+                            {
+                                Id = Guid.NewGuid(),
+                                UserId = token.CustomerId,
+                                ProductId = productId,
+                                EventTime = DateTime.UtcNow,
+                                Weight = EventWeights.Purchase.Weight,
+                                EventName = EventWeights.Purchase.Name,
+                            };
+                            var eventJson = JsonHelper.ConvertToJsonString(userEvent);
 
+                            await _eventBufferService.AppendEventAsync(eventJson);
 
                         }
                         newOrder.TotalPrice = newOrder.OrderItems.Sum(x => x.Quantity * x.UnitPrice);

@@ -2,6 +2,7 @@
 using ERP_Service.Application.Services.Interfaces;
 using ERP_Service.Domain.ApiResult;
 using ERP_Service.Domain.Models.Orders;
+using ERP_Service.Domain.PagingRequest;
 using ERP_Service.Infrastructure;
 using ERP_Service.Shared.Models;
 using ERP_Service.Shared.Utilities;
@@ -124,6 +125,48 @@ namespace ERP_Service.API.Controllers
             await _dbContext.SaveChangesAsync();
             return Ok(new ApiSuccessResult<string>("Xóa thành công"));
         }
+        [HttpGet]
+        public async Task<IActionResult> GetAll([FromQuery] OptionFilterVoucher option)
+        {
+            PayloadToken token = _authoziService.PayloadToken;
 
+            var query = _dbContext.Vouchers.Where(x => x.StoreId == token.StoreId);
+            int totalRows = await query.CountAsync();
+            var data = await query
+                .Skip((option.PageIndex - 1) * option.PageSize)
+                .Take(option.PageSize)
+                .Select(x => new VoucherGetAllDto
+                {
+                    Id = x.Id,
+                    VoucherCode = x.VoucherCode,
+                    Title = x.Title,
+                    DiscountPercent = x.DiscountPercent,
+                    DiscountValue   = x.DiscountValue,
+                    ExpirationDate = x.ExpirationDate,
+                    MaxDiscountValue = x.MaxDiscountValue,
+                    MinOrderValue = x.MinOrderValue,
+                    StartDate = x.StartDate,
+                })
+                .ToListAsync();
+            return Ok(new ApiSuccessResult<IEnumerable<VoucherGetAllDto>>(data)
+            {
+                TotalRecordsCount = totalRows,
+            });
+        }
     }
+}
+public class OptionFilterVoucher : PagingRequestParameters
+{
+}
+public class VoucherGetAllDto
+{
+    public Guid Id { get; set; }
+    public string VoucherCode { get; set; } = null!;
+    public string? Title { get; set; }
+    public double? DiscountPercent { get; set; }
+    public double? DiscountValue { get; set; }
+    public double? MaxDiscountValue { get; set; }
+    public double? MinOrderValue { get; set; }
+    public DateTime StartDate { get; set; }
+    public DateTime ExpirationDate { get; set; }
 }

@@ -171,7 +171,7 @@ public class StoreController(
     [HttpGet("get-all")]
     public async Task<IActionResult> GetAll([FromQuery] OptionFilterStore request)
     {
-        var query = _dbContext.Stores.AsQueryable();
+        var query = _dbContext.Stores.OrderByDescending(x => x.Verified).AsQueryable();
 
         if (!string.IsNullOrEmpty(request.KeyWord))
         {
